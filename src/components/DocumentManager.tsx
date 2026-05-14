@@ -14,8 +14,8 @@ interface DocumentManagerProps {
 }
 
 export default function DocumentManager({ patient, specialty, activeRole }: DocumentManagerProps) {
-  const draName = "Dra. Lluvia Gutiérrez";
-  const clinicName = "Medical D'Lis";
+  const draName = "";
+  const clinicName = "";
   
   const generateConsentText = () => {
     return `

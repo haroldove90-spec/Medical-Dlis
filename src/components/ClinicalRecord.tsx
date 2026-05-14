@@ -16,6 +16,7 @@ import {
   Activity,
   Image as ImageIcon,
   PenTool,
+  Plus,
   X,
   CheckCircle2
 } from 'lucide-react';
@@ -41,6 +42,11 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
   };
 
   const [specialty, setSpecialty] = useState<Specialty>(getDefaultSpecialty());
+
+  const draName = "";
+  const professionalCeadula = "";
+
+  const mockHistory: any[] = [];
   const [note, setNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string>(
@@ -48,20 +54,33 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
     activeSection === 'recipe' ? 'recipe' : 'evolution'
   );
   
-  const draName = "Dra. Lluvia Gutiérrez";
-  const professionalCeadula = "CED. PROF. 12345678";
+  const [prescriptions, setPrescriptions] = useState<{med: string, dose: string, freq: string}[]>([]);
+  const [newMed, setNewMed] = useState({ med: '', dose: '', freq: '' });
 
-  const mockHistory = [
-    { date: '12 May, 2024', type: 'Nota Evolución', doctor: draName, content: specialty === 'Cirugía General' ? 'Paciente post-operado de colecistectomía. Heridas limpias, sin signos de infección. Refiere dolor leve 2/10.' : 'Aplicación de toxina botulínica en frente y patas de gallo. Sin complicaciones inmediatas.' },
-    { date: '05 May, 2024', type: 'Endoscopia', doctor: 'Dr. Ricardo Valdés', content: 'Se observa mucosa gástrica con eritema difuso en antro. Se toma biopsia para descartar H. Pylori.' },
-    { date: '20 Abr, 2024', type: 'Consulta Gral', doctor: draName, content: 'Valoración inicial para procedimiento estético. Paciente candidato a armonización facial.' },
-  ];
+  const addMedication = () => {
+    if (newMed.med) {
+      setPrescriptions([...prescriptions, newMed]);
+      setNewMed({ med: '', dose: '', freq: '' });
+    }
+  };
 
-  const defaultNote = specialty === 'Cirugía General' 
-    ? "DESCRIPCIÓN QUIRÚRGICA:\n- Hallazgos:\n- Técnica empleada:\n- Complicaciones:\n- Plan: Antibioticoterapia y cita en 7 días."
-    : specialty === 'Medicina Estética'
-    ? "FICHA TÉCNICA CABINA:\n- Producto/Marca:\n- Lote/Caducidad:\n- Unidades/ml aplicados:\n- Recomendaciones: Protector solar y no ejercicio por 24h."
-    : "NOTA DE EVOLUCIÓN:\n- Diagnóstico:\n- Tratamiento realizado:\n- Pronóstico:";
+  const removeMedication = (index: number) => {
+    setPrescriptions(prescriptions.filter((_, i) => i !== index));
+  };
+
+  const consentInfo = {
+    Estética: "",
+    Cirugía: "",
+    General: ""
+  };
+
+  const getConsentText = () => {
+    if (specialty === 'Medicina Estética') return consentInfo.Estética;
+    if (specialty === 'Cirugía General') return consentInfo.Cirugía;
+    return consentInfo.General;
+  };
+
+  const defaultNote = "";
 
   useEffect(() => {
     setNote(defaultNote);
@@ -475,26 +494,25 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
           exit={{ opacity: 0, scale: 1.02 }}
           className="max-w-3xl mx-auto space-y-10 py-10"
         >
-          <div className="p-12 bg-slate-50 border border-slate-100 rounded-[3rem] shadow-inner font-serif text-slate-800 leading-relaxed space-y-6">
+          <div className="p-12 bg-slate-50 border border-slate-100 rounded-[3rem] shadow-inner font-sans text-slate-800 leading-relaxed space-y-8">
             <div className="text-center mb-10">
-               <h3 className="text-xl font-bold uppercase tracking-widest text-slate-900">CONSENTIMIENTO INFORMADO</h3>
-               <p className="text-[10px] font-bold text-brand-purple mt-2">MEDICAL D'LIS - CLÍNICA DE ESPECIALIDADES</p>
+               <h3 className="text-xl font-black uppercase tracking-[0.2em] text-brand-purple">Consentimiento Informado</h3>
+               <p className="text-[10px] font-bold text-slate-400 mt-2">Dra. Lluvia Gutiérrez • {professionalCeadula}</p>
             </div>
             
-            <p className="text-sm">
-              Yo, <strong>{patient.name}</strong>, por mi propio derecho y en pleno uso de mis facultades mentales, 
-              otorgo mi consentimiento libre y espontáneo para que el personal médico de <strong>Medical D'Lis</strong>, 
-              bajo la supervisión de la <strong>Dra. Lluvia Gutiérrez</strong>, realice el procedimiento de:
-            </p>
-
-            <div className="p-5 bg-white border border-slate-200 rounded-2xl text-center font-bold text-brand-purple uppercase tracking-widest">
-               {specialty}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6 border-y border-slate-200">
+               <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase text-slate-400">Paciente</p>
+                  <p className="text-sm font-bold text-slate-900">{patient.name}</p>
+               </div>
+               <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase text-slate-400">Procedimiento</p>
+                  <p className="text-sm font-bold text-slate-900">{specialty}</p>
+               </div>
             </div>
 
-            <p className="text-sm">
-               Entiendo que el procedimiento conlleva riesgos inherentes como hematomas, inflamación, infección o reacciones adversas. 
-               Se me ha explicado la técnica, los beneficios esperados y las alternativas existentes. 
-               Acepto seguir las indicaciones post-procedimiento para minimizar complicaciones.
+            <p className="text-sm first-letter:text-4xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:text-brand-purple">
+              {getConsentText() || ""}
             </p>
 
             <div className="pt-20 flex flex-col items-center">
@@ -511,7 +529,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
                </div>
                <div className="w-64 h-px bg-slate-400 mt-4"></div>
                <p className="text-[10px] font-black uppercase tracking-widest mt-2">{patient.name}</p>
-               <p className="text-[9px] text-slate-400">FIRMA DEL PACIENTE</p>
+               <p className="text-[9px] text-slate-400 font-bold">FECHA: {new Date().toLocaleDateString()}</p>
             </div>
           </div>
         </motion.div>
@@ -548,7 +566,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
                </div>
             </div>
 
-            <div className="space-y-12 mb-16">
+            <div className="space-y-8 mb-16">
                <div className="flex items-baseline gap-4 border-b border-slate-100 pb-2">
                   <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Paciente:</span>
                   <span className="text-sm font-bold text-slate-900 uppercase">{patient.name}</span>
@@ -557,23 +575,70 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
                   <span className="text-sm font-bold text-slate-900">{new Date().toLocaleDateString('es-MX')}</span>
                </div>
 
-               <div className="min-h-[400px] py-10">
+               <div className="min-h-[400px] py-6">
                   <div className="flex items-center gap-4 text-brand-purple mb-8">
-                     <span className="text-4xl font-black italic">Rx</span>
+                     <span className="text-4xl font-black italic underline decoration-brand-purple/20">Rx</span>
                      <div className="h-px flex-1 bg-brand-purple/10"></div>
                   </div>
-                  <textarea 
-                     placeholder="Indique medicamentos, dosis y frecuencia..."
-                     className="w-full h-96 border-none focus:ring-0 focus:outline-none text-base font-medium text-slate-700 bg-transparent resize-none leading-relaxed"
-                     defaultValue={"1. Ketorolaco 10mg - 1 tableta cada 8 horas por 3 días.\n2. Amoxicilina 500mg - 1 tableta cada 8 horas por 7 días.\n3. Reposo absoluto por 48 horas.\n4. Aplicación de frío local en zona tratada."}
-                  />
+
+                  <div className="space-y-4 mb-8 no-print">
+                    <div className="flex gap-4">
+                      <input 
+                        type="text" 
+                        placeholder="Medicamento" 
+                        value={newMed.med}
+                        onChange={e => setNewMed({...newMed, med: e.target.value})}
+                        className="flex-1 p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold"
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="Dosis" 
+                        value={newMed.dose}
+                        onChange={e => setNewMed({...newMed, dose: e.target.value})}
+                        className="w-32 p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold"
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="Frecuencia"
+                        value={newMed.freq}
+                        onChange={e => setNewMed({...newMed, freq: e.target.value})}
+                        className="flex-1 p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold"
+                      />
+                      <button 
+                        onClick={addMedication}
+                        className="p-3 bg-brand-purple text-white rounded-xl hover:scale-105 transition-transform shadow-lg shadow-brand-purple/20"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {prescriptions.map((p, i) => (
+                      <div key={i} className="flex items-start justify-between group">
+                        <div className="flex-1">
+                          <p className="text-base font-black text-slate-900 uppercase tracking-tight">{p.med}</p>
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">Dosis: {p.dose} — {p.freq}</p>
+                        </div>
+                        <button 
+                          onClick={() => removeMedication(i)}
+                          className="p-1 text-rose-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all no-print"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    {prescriptions.length === 0 && (
+                      <p className="text-sm font-medium text-slate-300 italic"></p>
+                    )}
+                  </div>
                </div>
             </div>
 
             <div className="flex border-t border-slate-100 pt-10">
                <div className="w-1/2 pr-10 border-r border-slate-100">
                   <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-4 italic">Fórmula / Indicaciones</p>
-                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed italic">Tratamiento sugerido según valoración clínica. Cualquier reacción adversa consultar a su médico de inmediato.</p>
+                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed italic"></p>
                </div>
                <div className="w-1/2 pl-10 flex flex-col items-center">
                   <div className="w-48 h-px bg-slate-300 mb-2"></div>

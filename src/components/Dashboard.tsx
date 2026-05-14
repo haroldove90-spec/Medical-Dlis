@@ -36,7 +36,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ activeRole, activeSection }: DashboardProps) {
-  const [patients, setPatients] = useState<Patient[]>(INITIAL_PATIENTS);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFinance, setShowFinance] = useState(false);
