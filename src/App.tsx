@@ -8,21 +8,32 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import AppointmentForm from './components/AppointmentForm';
 import RoleSelection from './components/RoleSelection';
 import { Role } from './types';
-import { Bell, Menu, LogOut } from 'lucide-react';
+import { Bell, Menu, LogOut, LayoutDashboard } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 export default function App() {
   const [activeRole, setActiveRole] = useState<Role | null>(null);
+  const [activeSection, setActiveSection] = useState<string>('default');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Reset section when role changes
+  useEffect(() => {
+    if (activeRole === Role.ADMIN) setActiveSection('metrics');
+    else if (activeRole === Role.RECEPCION) setActiveSection('agenda');
+    else if (activeRole === Role.MEDICO) setActiveSection('patients');
+    else if (activeRole === Role.ESTETICA) setActiveSection('cabin');
+    else if (activeRole === Role.PACIENTE) setActiveSection('portal');
+  }, [activeRole]);
 
   const handleLogout = () => {
     setActiveRole(null);
+    setActiveSection('default');
     setIsSidebarOpen(false);
   };
 
@@ -31,42 +42,49 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-main flex selection:bg-brand-purple/20 selection:text-brand-purple font-sans">
+    <div className="min-h-screen bg-bg-main flex selection:bg-brand-purple/20 selection:text-brand-purple font-sans tracking-tight">
       {/* Sidebar */}
       <Sidebar 
         activeRole={activeRole} 
-        onRoleChange={setActiveRole} 
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         onLogout={handleLogout}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 lg:ml-64 p-4 md:p-8 lg:p-12 min-h-screen flex flex-col">
+      <main className={`flex-1 flex flex-col min-h-screen transition-all duration-500 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
         {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div className="flex items-center justify-between gap-4">
+        <header className="p-6 md:p-8 lg:p-10 pb-0 flex flex-col md:flex-row md:items-center justify-between gap-6 sticky top-0 bg-bg-main/90 backdrop-blur-xl z-40 border-b border-transparent">
+          <div className="flex items-center gap-4">
             <button 
-              onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 shadow-sm"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-purple transition-all shadow-sm"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none">Medical D'Lis</h1>
-              <p className="text-slate-500 mt-2 text-sm font-medium">Módulo: <span className="text-brand-purple font-bold uppercase tracking-wider">{activeRole}</span></p>
+              <h1 className="text-3xl font-display font-black text-slate-900 tracking-tight leading-none">Medical D'Lis</h1>
+              <p className="text-slate-500 mt-1.5 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse"></span>
+                Panel: {activeRole}
+              </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-4 ml-auto md:ml-0">
+          <div className="flex items-center gap-3">
             <div className="hidden sm:flex bg-emerald-50 p-2 px-4 rounded-full border border-emerald-100 items-center space-x-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
               <span className="text-[10px] uppercase tracking-[0.15em] font-black text-emerald-700">Sistema Conectado</span>
             </div>
             
-            <button className="relative p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-brand-purple hover:border-brand-purple/30 transition-all shadow-sm">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-3 right-3 w-2 h-2 bg-brand-purple border-2 border-white rounded-full"></span>
+            <button 
+              onClick={() => setActiveRole(null)}
+              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-purple transition-all shadow-sm"
+              title="Cambiar Perfil"
+            >
+              <LayoutDashboard className="w-5 h-5" />
             </button>
 
             <button 
@@ -80,23 +98,23 @@ export default function App() {
         </header>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start flex-1">
-          <div className={`${activeRole === Role.PACIENTE ? 'xl:col-span-12' : 'xl:col-span-8'} space-y-8`}>
+        <div className="p-6 md:p-8 lg:p-10 pt-8 grid grid-cols-1 xl:grid-cols-12 gap-10 items-start flex-1">
+          <div className={`${activeRole === Role.PACIENTE || activeRole === Role.ADMIN ? 'xl:col-span-12' : 'xl:col-span-8'} space-y-8 pb-32`}>
             <AnimatePresence mode="wait">
               <motion.div
-                key={activeRole}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                key={`${activeRole}-${activeSection}`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.3 }}
               >
-                <Dashboard activeRole={activeRole} />
+                <Dashboard activeRole={activeRole} activeSection={activeSection} />
               </motion.div>
             </AnimatePresence>
           </div>
           
-          {activeRole !== Role.PACIENTE && (
-            <div className="xl:col-span-4 lg:sticky lg:top-12">
+          {activeRole !== Role.PACIENTE && activeRole !== Role.ADMIN && (
+            <div className="xl:col-span-4 lg:sticky lg:top-32 space-y-8">
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -104,6 +122,22 @@ export default function App() {
               >
                 <AppointmentForm activeRole={activeRole} />
               </motion.div>
+              
+              <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-brand-purple rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-white/10 rounded-xl">
+                    <Bell className="w-4 h-4 text-brand-purple" />
+                  </div>
+                  <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white/90">Aviso Sugerido AI</h4>
+                </div>
+                <p className="text-xs text-white/60 leading-relaxed font-medium">
+                  Se detectó baja de stock en <span className="text-white font-bold">Botox (Vial 100u)</span>. 3 pacientes programados para mañana requieren aplicación.
+                </p>
+                <button className="mt-6 w-full py-3 bg-white/10 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all">
+                  Actualizar Inventario
+                </button>
+              </div>
             </div>
           )}
         </div>

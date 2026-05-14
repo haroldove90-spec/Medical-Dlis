@@ -11,8 +11,14 @@ const mockInventory: InventoryItem[] = [
   { id: '1', name: 'Botox (Vial 100u)', stock: 5, minStock: 3, category: 'Estética' },
   { id: '2', name: 'Relleno Hialurónico', stock: 12, minStock: 10, category: 'Estética' },
   { id: '3', name: 'Kits Sutura Pro', stock: 2, minStock: 5, category: 'Cirugía' },
-  { id: '4', name: 'Gasas Estériles', stock: 50, minStock: 20, category: 'Gral' },
-  { id: '5', name: 'Guantes de Nitrilo', stock: 8, minStock: 15, category: 'Gral' },
+  { id: '4', name: 'Gasas Estériles (Paq.)', stock: 50, minStock: 20, category: 'Gral' },
+  { id: '5', name: 'Guantes de Nitrilo (Caja)', stock: 8, minStock: 15, category: 'Gral' },
+  { id: '6', name: 'Cartuchos Dermapen', stock: 15, minStock: 10, category: 'Estética' },
+  { id: '7', name: 'Gel Conductivo 5L', stock: 1, minStock: 2, category: 'Estética' },
+  { id: '8', name: 'Cánulas Endoscopia', stock: 4, minStock: 10, category: 'Cirugía' },
+  { id: '9', name: 'Mascarilla Hidrogel', stock: 25, minStock: 10, category: 'Estética' },
+  { id: '10', name: 'Anestésico Tópico 30g', stock: 10, minStock: 5, category: 'Estética' },
+  { id: '11', name: 'Compresas Frías', stock: 30, minStock: 15, category: 'Gral' },
 ];
 
 export default function InventoryManager() {

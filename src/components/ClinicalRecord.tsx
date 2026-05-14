@@ -39,6 +39,25 @@ export default function ClinicalRecord({ patient, onClose, activeRole }: Clinica
   };
 
   const [specialty, setSpecialty] = useState<Specialty>(getDefaultSpecialty());
+  const [note, setNote] = useState('');
+  
+  const draName = "Dra. Lluvia Gutiérrez";
+
+  const mockHistory = [
+    { date: '12 May, 2024', type: 'Nota Evolución', doctor: draName, content: specialty === 'Cirugía General' ? 'Paciente post-operado de colecistectomía. Heridas limpias, sin signos de infección. Refiere dolor leve 2/10.' : 'Aplicación de toxina botulínica en frente y patas de gallo. Sin complicaciones inmediatas.' },
+    { date: '05 May, 2024', type: 'Endoscopia', doctor: 'Dr. Ricardo Valdés', content: 'Se observa mucosa gástrica con eritema difuso en antro. Se toma biopsia para descartar H. Pylori.' },
+    { date: '20 Abr, 2024', type: 'Consulta Gral', doctor: draName, content: 'Valoración inicial para procedimiento estético. Paciente candidato a armonización facial.' },
+  ];
+
+  const defaultNote = specialty === 'Cirugía General' 
+    ? "DESCRIPCIÓN QUIRÚRGICA:\n- Hallazgos:\n- Técnica empleada:\n- Complicaciones:\n- Plan: Antibioticoterapia y cita en 7 días."
+    : specialty === 'Medicina Estética'
+    ? "FICHA TÉCNICA CABINA:\n- Producto/Marca:\n- Lote/Caducidad:\n- Unidades/ml aplicados:\n- Recomendaciones: Protector solar y no ejercicio por 24h."
+    : "NOTA DE EVOLUCIÓN:\n- Diagnóstico:\n- Tratamiento realizado:\n- Pronóstico:";
+
+  useEffect(() => {
+    setNote(defaultNote);
+  }, [specialty]);
   
   // Signature Canvas Ref
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -218,8 +237,10 @@ export default function ClinicalRecord({ patient, onClose, activeRole }: Clinica
                         <span>Nota Quirúrgica / Médica</span>
                       </div>
                       <textarea 
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
                         placeholder="Detalles del procedimiento..."
-                        className="w-full input-light min-h-[100px] resize-none text-sm font-medium"
+                        className="w-full input-light min-h-[200px] resize-none text-sm font-medium"
                       />
                     </div>
                   </div>
@@ -253,18 +274,54 @@ export default function ClinicalRecord({ patient, onClose, activeRole }: Clinica
                         <Sparkles className="w-4 h-4 text-brand-purple" />
                       </div>
                       <div className="flex items-end gap-1">
-                        <span className="text-5xl font-display font-black text-slate-900 leading-none">3</span>
-                        <span className="text-slate-400 font-bold text-xl mb-1">/ 10</span>
+                        <span className="text-5xl font-display font-black text-slate-900 leading-none">
+                          {patient.sessions?.includes('de') ? patient.sessions.split(' ')[0] : '1'}
+                        </span>
+                        <span className="text-slate-400 font-bold text-xl mb-1">
+                          / {patient.sessions?.includes('de') ? patient.sessions.split(' ')[2] : '10'}
+                        </span>
                       </div>
                       <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                        <div className="bg-brand-purple h-full rounded-full" style={{ width: '30%' }}></div>
+                        <div 
+                          className="bg-brand-purple h-full rounded-full transition-all duration-1000" 
+                          style={{ 
+                            width: patient.sessions?.includes('de') 
+                              ? `${(parseInt(patient.sessions.split(' ')[0]) / parseInt(patient.sessions.split(' ')[2])) * 100}%` 
+                              : '10%' 
+                          }}
+                        ></div>
                       </div>
-                      <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Procedimiento: Botox Tercio Superior</p>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Procedimiento: {specialty}</p>
                     </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* History Feed - Línea de Tiempo */}
+            <div className="space-y-4 pt-8 border-t border-slate-100">
+               <div className="flex items-center gap-2 text-brand-purple text-sm font-bold uppercase tracking-wider mb-4">
+                  <History className="w-4 h-4" />
+                  <span>Historial de Consultas y Procedimientos</span>
+               </div>
+               <div className="space-y-4">
+                  {mockHistory.map((item, idx) => (
+                    <div key={idx} className="flex gap-4">
+                       <div className="flex flex-col items-center">
+                          <div className="w-2 h-2 rounded-full bg-brand-purple mt-1.5"></div>
+                          <div className="w-0.5 flex-1 bg-slate-100 my-1"></div>
+                       </div>
+                       <div className="flex-1 pb-6">
+                          <div className="flex items-center justify-between mb-1">
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.date} • {item.type}</p>
+                             <p className="text-[10px] font-bold text-slate-900">{item.doctor}</p>
+                          </div>
+                          <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 italic">"{item.content}"</p>
+                       </div>
+                    </div>
+                  ))}
+               </div>
+            </div>
 
             {/* Gallery Section - Visible for everyone but mainly for Aesthetics/Medics */}
             <div className="space-y-4 pt-8 border-t border-slate-100">

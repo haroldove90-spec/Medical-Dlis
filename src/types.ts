@@ -34,6 +34,8 @@ export interface Patient {
   service: string;
   email?: string;
   phone?: string;
+  status?: string;
+  sessions?: string;
 }
 
 export type Specialty = 'Cirugía General' | 'Medicina Estética' | 'Aparatología' | 'Podología';

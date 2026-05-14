@@ -8,9 +8,11 @@ import { Staff } from '../types';
 import { motion } from 'motion/react';
 
 const mockStaff: Staff[] = [
-  { id: '1', name: 'Dra. Lluvia G.', role: 'Directora / Médica', commission: 4500, services: 12 },
-  { id: '2', name: 'Lic. Ana Martínez', role: 'Cosmetóloga', commission: 2800, services: 24 },
-  { id: '3', name: 'Dr. Roberto Sánchez', role: 'Podólogo', commission: 1950, services: 8 },
+  { id: '1', name: 'Dra. Lluvia G.', role: 'Directora / Médica', commission: 14500, services: 42 },
+  { id: '2', name: 'Lic. Ana Martínez', role: 'Cosmetóloga', commission: 4800, services: 64 },
+  { id: '3', name: 'Dr. Roberto Sánchez', role: 'Podólogo', commission: 3950, services: 18 },
+  { id: '4', name: 'Lic. Carla Ruiz', role: 'Enfermera Gral', commission: 2100, services: 30 },
+  { id: '5', name: 'Dr. Ricardo Valdés', role: 'Gastroenterólogo', commission: 7200, services: 12 },
 ];
 
 export default function StaffManager() {

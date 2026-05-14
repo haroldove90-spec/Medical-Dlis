@@ -3,51 +3,56 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { LayoutDashboard, Users, UserRound, Sparkles, ClipboardList, LogOut, Menu, User, Package, DollarSign, X as CloseIcon } from 'lucide-react';
 import { Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState } from 'react';
 
 interface SidebarProps {
   activeRole: Role;
-  onRoleChange: (role: Role) => void;
+  activeSection: string;
+  onSectionChange: (section: string) => void;
   isOpen: boolean;
   onToggle: () => void;
   onLogout: () => void;
 }
 
-export default function Sidebar({ activeRole, isOpen, onToggle, onLogout }: SidebarProps) {
+export default function Sidebar({ activeRole, activeSection, onSectionChange, isOpen, onToggle, onLogout }: SidebarProps) {
   const getMenuItems = () => {
     switch (activeRole) {
       case Role.ADMIN:
         return [
-          { id: 'metrics', icon: LayoutDashboard, label: 'Métricas Negocio' },
-          { id: 'finance', icon: DollarSign, label: 'Ingresos y Caja' },
+          { id: 'metrics', icon: LayoutDashboard, label: 'Dashboard' },
+          { id: 'finance', icon: DollarSign, label: 'Finanzas' },
           { id: 'inventory', icon: Package, label: 'Inventario' },
           { id: 'staff', icon: Users, label: 'Personal' },
         ];
       case Role.MEDICO:
         return [
-          { id: 'patients', icon: Users, label: 'Pacientes Med.' },
+          { id: 'patients', icon: Users, label: 'Pacientes' },
           { id: 'records', icon: UserRound, label: 'Expedientes' },
-          { id: 'docs', icon: ClipboardList, label: 'Recetas/Consent.' },
+          { id: 'docs', icon: ClipboardList, label: 'Recetario' },
         ];
       case Role.ESTETICA:
         return [
-          { id: 'cabin', icon: Sparkles, label: 'Tratamientos' },
-          { id: 'photos', icon: UserRound, label: 'Antes y Después' },
+          { id: 'cabin', icon: Sparkles, label: 'Cabina' },
+          { id: 'photos', icon: UserRound, label: 'Evolución' },
           { id: 'packages', icon: ClipboardList, label: 'Sesiones' },
         ];
       case Role.RECEPCION:
         return [
-          { id: 'agenda', icon: LayoutDashboard, label: 'Agenda Diaria' },
+          { id: 'agenda', icon: LayoutDashboard, label: 'Agenda' },
           { id: 'patients', icon: Users, label: 'Pacientes' },
-          { id: 'box', icon: DollarSign, label: 'Cobros' },
+          { id: 'box', icon: DollarSign, label: 'Caja Reg.' },
         ];
       case Role.PACIENTE:
         return [
           { id: 'portal', icon: User, label: 'Mi Portal' },
-          { id: 'appointments', icon: LayoutDashboard, label: 'Mis Citas' },
+          { id: 'appointments', icon: LayoutDashboard, label: 'Citas' },
         ];
       default:
         return [];
@@ -57,63 +62,71 @@ export default function Sidebar({ activeRole, isOpen, onToggle, onLogout }: Side
   const menuItems = getMenuItems();
 
   const sidebarContent = (
-    <div className="h-full flex flex-col bg-bg-sidebar border-r border-slate-100">
+    <div className="h-full flex flex-col bg-slate-900 border-r border-white/5 shadow-2xl relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-purple to-purple-400"></div>
+      
       <div className="p-8">
-        <div className="mb-10 flex items-center justify-between">
+        <div className="mb-12 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-brand-purple-light rounded-xl flex items-center justify-center overflow-hidden border border-brand-purple/10">
-              <img src="/1000305383.jpg" alt="Logo" className="w-full h-full object-cover" />
+            <div className="w-10 h-10 bg-brand-purple rounded-xl flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(154,127,243,0.3)]">
+              <span className="text-xl font-display font-black text-white">D</span>
             </div>
             <div>
-              <h1 className="font-display font-black text-xl text-brand-purple tracking-tight leading-none">Medical D'Lis</h1>
-              <p className="text-[9px] text-slate-400 tracking-[0.2em] font-bold mt-1">ESTHÉTIQUE & SANTÉ</p>
+              <h1 className="font-display font-black text-xl text-white tracking-tight leading-none italic">Medical <span className="text-brand-purple">D'Lis.</span></h1>
+              <p className="text-[7.5px] text-slate-500 tracking-[0.3em] font-black mt-1.5 uppercase">Professional System</p>
             </div>
           </div>
-          <button onClick={onToggle} className="lg:hidden p-2 text-slate-400">
-            <CloseIcon className="w-6 h-6" />
+          <button onClick={onToggle} className="lg:hidden p-2 text-slate-500 hover:text-white transition-colors">
+            <CloseIcon className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="space-y-2">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-4 px-4">Panel {activeRole}</p>
+        <nav className="space-y-1.5">
+          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.25em] mb-6 px-4">Módulos Activos</p>
           {menuItems.map((item) => {
             const Icon = item.icon;
+            const isActive = activeSection === item.id;
             return (
               <button
                 key={item.id}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all font-bold text-sm text-slate-400 bg-transparent hover:bg-slate-50 border border-transparent"
+                onClick={() => {
+                  onSectionChange(item.id);
+                  if (window.innerWidth < 1024) onToggle();
+                }}
+                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 font-bold text-sm relative group ${
+                  isActive 
+                    ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/25' 
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-slate-600 group-hover:text-brand-purple'}`} />
                 <span>{item.label}</span>
+                {isActive && (
+                  <motion.div 
+                    layoutId="sidebarActive"
+                    className="absolute left-[-8px] w-1.5 h-6 bg-white rounded-r-full"
+                  />
+                )}
               </button>
             );
           })}
         </nav>
       </div>
 
-      <div className="mt-auto p-6 border-t border-slate-50 space-y-2">
-        <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl mb-2">
-          <div className="w-10 h-10 rounded-full bg-brand-purple text-white flex items-center justify-center font-bold text-xs shadow-md">
+      <div className="mt-auto p-6 border-t border-white/5 bg-slate-900/50 backdrop-blur-sm space-y-3">
+        <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 border border-white/5 flex items-center justify-center font-black text-xs shadow-inner group-hover:border-brand-purple/30 group-hover:text-brand-purple transition-all">
             LG
           </div>
-          <div>
-            <p className="text-xs font-bold text-slate-900 leading-none mb-1">Dra. Lluvia G.</p>
-            <p className="text-[9px] text-brand-purple font-bold tracking-wider uppercase">MODO: {activeRole}</p>
+          <div className="overflow-hidden">
+            <p className="text-xs font-black text-white leading-none mb-1 truncate">Dra. Lluvia G.</p>
+            <p className="text-[8px] text-brand-purple font-black tracking-widest uppercase truncate">{activeRole}</p>
           </div>
         </div>
         
         <button 
           onClick={onLogout}
-          className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-brand-purple transition-colors px-4 w-full py-2 hover:bg-slate-50 rounded-xl"
-        >
-          <LayoutDashboard className="w-4 h-4" />
-          <span>Cambiar de Rol</span>
-        </button>
-
-        <button 
-          id="logout-button" 
-          onClick={onLogout}
-          className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-rose-500 transition-colors px-4 w-full py-2 hover:bg-rose-50 rounded-xl"
+          className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-rose-500 transition-all px-4 w-full py-4 hover:bg-rose-500/5 rounded-2xl border border-transparent hover:border-rose-500/10"
         >
           <LogOut className="w-4 h-4" />
           <span>Cerrar Sesión</span>
@@ -124,7 +137,6 @@ export default function Sidebar({ activeRole, isOpen, onToggle, onLogout }: Side
 
   return (
     <>
-      {/* Mobile Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -132,30 +144,16 @@ export default function Sidebar({ activeRole, isOpen, onToggle, onLogout }: Side
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onToggle}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] lg:hidden"
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[60] lg:hidden"
           />
         )}
       </AnimatePresence>
 
-      {/* Sidebar for Desktop */}
-      <aside className="hidden lg:flex w-64 h-screen flex-col fixed left-0 top-0 z-50 overflow-hidden">
+      <aside className={`fixed left-0 top-0 bottom-0 z-[70] transition-all duration-500 ease-in-out ${
+        isOpen ? 'w-80 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0 lg:w-20'
+      } overflow-hidden shadow-2xl`}>
         {sidebarContent}
       </aside>
-
-      {/* Sidebar for Mobile */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.aside
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed left-0 top-0 bottom-0 w-80 z-[70] lg:hidden overflow-hidden shadow-2xl"
-          >
-            {sidebarContent}
-          </motion.aside>
-        )}
-      </AnimatePresence>
     </>
   );
 }
