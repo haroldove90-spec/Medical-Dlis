@@ -99,47 +99,54 @@ export default function App() {
 
         {/* Content Grid */}
         <div className="p-6 md:p-8 lg:p-10 pt-8 grid grid-cols-1 xl:grid-cols-12 gap-10 items-start flex-1">
-          <div className={`${activeRole === Role.PACIENTE || activeRole === Role.ADMIN ? 'xl:col-span-12' : 'xl:col-span-8'} space-y-8 pb-32`}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`${activeRole}-${activeSection}`}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Dashboard activeRole={activeRole} activeSection={activeSection} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          
-          {activeRole !== Role.PACIENTE && activeRole !== Role.ADMIN && (
-            <div className="xl:col-span-4 lg:sticky lg:top-32 space-y-8">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <AppointmentForm activeRole={activeRole} />
-              </motion.div>
-              
-              <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group">
-                <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-brand-purple rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-white/10 rounded-xl">
-                    <Bell className="w-4 h-4 text-brand-purple" />
-                  </div>
-                  <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white/90">Aviso Sugerido AI</h4>
+          {(() => {
+            const hasRightSidebar = activeRole === Role.RECEPCION && (activeSection === 'agenda' || activeSection === 'registration');
+            return (
+              <>
+                <div className={`${!hasRightSidebar ? 'xl:col-span-12' : 'xl:col-span-8'} space-y-8 pb-32`}>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`${activeRole}-${activeSection}`}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Dashboard activeRole={activeRole} activeSection={activeSection} />
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
-                <p className="text-xs text-white/60 leading-relaxed font-medium">
-                  Se detectó baja de stock en <span className="text-white font-bold">Botox (Vial 100u)</span>. 3 pacientes programados para mañana requieren aplicación.
-                </p>
-                <button className="mt-6 w-full py-3 bg-white/10 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all">
-                  Actualizar Inventario
-                </button>
-              </div>
-            </div>
-          )}
+                
+                {hasRightSidebar && (
+                  <div className="xl:col-span-4 lg:sticky lg:top-32 space-y-8">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <AppointmentForm activeRole={activeRole} />
+                    </motion.div>
+                    
+                    <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group">
+                      <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-brand-purple rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-white/10 rounded-xl">
+                          <Bell className="w-4 h-4 text-brand-purple" />
+                        </div>
+                        <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white/90">Aviso Sugerido AI</h4>
+                      </div>
+                      <p className="text-xs text-white/60 leading-relaxed font-medium">
+                        Se detectó baja de stock en <span className="text-white font-bold">Botox (Vial 100u)</span>. 3 pacientes programados para mañana requieren aplicación.
+                      </p>
+                      <button className="mt-6 w-full py-3 bg-white/10 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all">
+                        Actualizar Inventario
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       </main>
     </div>
