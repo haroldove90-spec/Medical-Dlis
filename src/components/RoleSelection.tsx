@@ -59,8 +59,8 @@ export default function RoleSelection({ onSelect }: RoleSelectionProps) {
     <div className="min-h-screen bg-bg-main flex flex-col p-6 md:p-12">
       <header className="max-w-7xl mx-auto w-full mb-16 text-center">
         <div className="flex flex-col items-center gap-4 mb-8">
-          <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-slate-100 overflow-hidden">
-             <img src="/1000305383.jpg" alt="Logo" className="w-full h-full object-cover" />
+          <div className="w-48 bg-white/50 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4">
+             <img src="https://cossma.com.mx/medical.png" alt="Medical D'Lis Logo" className="w-full h-auto object-contain drop-shadow-sm" />
           </div>
           <div>
             <h1 className="text-4xl font-display font-black text-slate-900 tracking-tight leading-none mb-2">Medical D'Lis</h1>

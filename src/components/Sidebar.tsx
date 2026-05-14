@@ -62,18 +62,14 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
   const menuItems = getMenuItems();
 
   const sidebarContent = (
-    <div className="h-full flex flex-col bg-slate-900 border-r border-white/5 shadow-2xl relative overflow-hidden">
+    <div className="w-full h-full flex flex-col bg-slate-900 border-r border-white/5 shadow-2xl relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-purple to-purple-400"></div>
       
-      <div className="p-8">
+      <div className="p-6">
         <div className="mb-12 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-brand-purple rounded-xl flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(154,127,243,0.3)]">
-              <span className="text-xl font-display font-black text-white">D</span>
-            </div>
-            <div>
-              <h1 className="font-display font-black text-xl text-white tracking-tight leading-none italic">Medical <span className="text-brand-purple">D'Lis.</span></h1>
-              <p className="text-[7.5px] text-slate-500 tracking-[0.3em] font-black mt-1.5 uppercase">Professional System</p>
+          <div className="flex items-center">
+            <div className="flex-shrink-0 transition-all duration-300 flex items-center bg-white rounded-xl p-2 w-40">
+               <img src="https://cossma.com.mx/medical.png" alt="Medical D'Lis Logo" className="w-full h-auto object-contain" />
             </div>
           </div>
           <button onClick={onToggle} className="lg:hidden p-2 text-slate-500 hover:text-white transition-colors">
@@ -81,26 +77,27 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
           </button>
         </div>
 
-        <nav className="space-y-1.5">
-          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.25em] mb-6 px-4">Módulos Activos</p>
+        <nav className="space-y-1.5 overflow-hidden">
+          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.25em] mb-6 px-4 transition-opacity duration-300">Módulos Activos</p>
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
             return (
               <button
                 key={item.id}
+                title={item.label}
                 onClick={() => {
                   onSectionChange(item.id);
                   if (window.innerWidth < 1024) onToggle();
                 }}
-                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 font-bold text-sm relative group ${
+                className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all duration-300 font-bold text-sm relative group ${
                   isActive 
                     ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/25' 
                     : 'text-slate-400 hover:bg-white/5 hover:text-white'
                 }`}
               >
-                <Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-slate-600 group-hover:text-brand-purple'}`} />
-                <span>{item.label}</span>
+                <div className="min-w-[1.25rem] flex items-center justify-center flex-shrink-0"><Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-slate-600 group-hover:text-brand-purple'}`} /></div>
+                <span className="transition-opacity duration-300 whitespace-nowrap">{item.label}</span>
                 {isActive && (
                   <motion.div 
                     layoutId="sidebarActive"
@@ -113,12 +110,12 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
         </nav>
       </div>
 
-      <div className="mt-auto p-6 border-t border-white/5 bg-slate-900/50 backdrop-blur-sm space-y-3">
-        <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 border border-white/5 flex items-center justify-center font-black text-xs shadow-inner group-hover:border-brand-purple/30 group-hover:text-brand-purple transition-all">
+      <div className="mt-auto p-4 border-t border-white/5 bg-slate-900/50 backdrop-blur-sm space-y-3">
+        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-colors cursor-pointer">
+          <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-slate-800 text-slate-400 border border-white/5 flex items-center justify-center font-black text-xs shadow-inner group-hover:border-brand-purple/30 group-hover:text-brand-purple transition-all">
             LG
           </div>
-          <div className="overflow-hidden">
+          <div className="overflow-hidden transition-opacity duration-300">
             <p className="text-xs font-black text-white leading-none mb-1 truncate">Dra. Lluvia G.</p>
             <p className="text-[8px] text-brand-purple font-black tracking-widest uppercase truncate">{activeRole}</p>
           </div>
@@ -126,10 +123,11 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
         
         <button 
           onClick={onLogout}
-          className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-rose-500 transition-all px-4 w-full py-4 hover:bg-rose-500/5 rounded-2xl border border-transparent hover:border-rose-500/10"
+          title="Cerrar Sesión"
+          className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-rose-500 transition-all px-3 w-full py-4 hover:bg-rose-500/5 rounded-2xl border border-transparent hover:border-rose-500/10"
         >
-          <LogOut className="w-4 h-4" />
-          <span>Cerrar Sesión</span>
+          <div className="min-w-[1.25rem] flex items-center justify-center flex-shrink-0"><LogOut className="w-5 h-5" /></div>
+          <span className="transition-opacity duration-300 whitespace-nowrap">Cerrar Sesión</span>
         </button>
       </div>
     </div>
@@ -150,8 +148,8 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
       </AnimatePresence>
 
       <aside className={`fixed left-0 top-0 bottom-0 z-[70] transition-all duration-500 ease-in-out ${
-        isOpen ? 'w-80 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0 lg:w-20'
-      } overflow-hidden shadow-2xl`}>
+        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      } w-80 overflow-hidden shadow-2xl`}>
         {sidebarContent}
       </aside>
     </>

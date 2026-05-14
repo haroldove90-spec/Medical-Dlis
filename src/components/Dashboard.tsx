@@ -274,6 +274,90 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
 
   const sectionInfo = getSectionTitle();
 
+  const renderRegistration = () => {
+    return (
+      <div className="space-y-8">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-4">
+          <div>
+            <h2 className="text-3xl font-display font-black text-slate-900 tracking-tight leading-none italic">
+              Registro de <span className="text-brand-purple">Pacientes.</span>
+            </h2>
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.25em] mt-3">
+              Datos de entrega y gestión
+            </p>
+          </div>
+          <button onClick={handleAddPatient} className="px-6 py-3 bg-brand-purple text-white rounded-2xl font-black text-xs shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-transform">
+            Simular Nuevo Registro
+          </button>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <section className="bg-white p-8 rounded-[3rem] shadow-sm border border-slate-100">
+            <h3 className="text-xl font-display font-black text-slate-900 mb-6">Simulador de Entrega de Datos</h3>
+            <p className="text-xs text-slate-500 mb-8">Activa este formulario para simular la función de entrega de resultados, recetas o expedientes al paciente por parte del área de recepción.</p>
+            
+            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Datos de entrega registrados exitosamente en el sistema.") }}>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Paciente Destinatario</label>
+                <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40 focus:ring-4 focus:ring-brand-purple/5 transition-all">
+                  <option value="">Seleccionar Paciente</option>
+                  {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tipo de Entrega</label>
+                  <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40">
+                    <option>Resultados Laboratorio</option>
+                    <option>Receta Médica Impresa</option>
+                    <option>Kit Post-Tratamiento</option>
+                    <option>Resumen Clínico</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Rol Responsable</label>
+                  <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40">
+                    <option>Recepción / Frente</option>
+                    <option>Asistente Médico</option>
+                    <option>Personal de Enfermería</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Notas u Observaciones (Función Simulada)</label>
+                <textarea rows={3} placeholder="Instrucciones dadas al paciente..." className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40 focus:ring-4 focus:ring-brand-purple/5 transition-all"></textarea>
+              </div>
+
+              <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-purple transition-all shadow-xl">
+                Activar Función de Entrega
+              </button>
+            </form>
+          </section>
+
+          <section className="bg-slate-50 border border-slate-100 rounded-[3rem] p-8">
+            <h3 className="text-xl font-display font-black text-slate-900 mb-6">Registro Activo</h3>
+            <div className="space-y-4 max-h-[500px] overflow-y-auto">
+              {patients.map((p, i) => (
+                <div key={p.id} className="p-5 bg-white border border-slate-100 rounded-[2rem] flex items-center justify-between group">
+                   <div>
+                     <h4 className="text-sm font-black text-slate-900">{p.name}</h4>
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{p.service}</p>
+                   </div>
+                   <div className="text-right">
+                     <p className="text-xs font-black text-brand-purple">{p.status || 'Activo'}</p>
+                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.lastVisit}</p>
+                   </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  };
+
   const renderClinicalView = () => (
     <div className="space-y-10">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-4">
@@ -485,7 +569,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
 
             {/* RECEPTION SECTIONS */}
             {activeSection === 'agenda' && renderAgenda()}
-            {activeSection === 'registration' && renderAgenda()}
+            {activeSection === 'registration' && renderRegistration()}
             {activeSection === 'box' && renderBoxView()}
             
             {/* CLINICAL SECTIONS (MEDIC & AESTHETIC) */}

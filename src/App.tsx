@@ -54,45 +54,46 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className={`flex-1 flex flex-col min-h-screen transition-all duration-500 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
+      <main className={`flex-1 flex flex-col min-h-screen transition-all duration-500 ease-in-out lg:ml-80`}>
         {/* Header */}
-        <header className="p-6 md:p-8 lg:p-10 pb-0 flex flex-col md:flex-row md:items-center justify-between gap-6 sticky top-0 bg-bg-main/90 backdrop-blur-xl z-40 border-b border-transparent">
-          <div className="flex items-center gap-4">
+        <header className="p-4 md:p-8 lg:p-10 pb-0 flex flex-row items-center justify-between gap-2 md:gap-6 sticky top-0 bg-bg-main/90 backdrop-blur-xl z-40 border-b border-transparent">
+          <div className="flex items-center gap-2 md:gap-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-purple transition-all shadow-sm"
+              className="lg:hidden p-2 md:p-3 bg-white border border-slate-200 rounded-xl md:rounded-2xl text-slate-400 hover:text-brand-purple transition-all shadow-sm shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div>
-              <h1 className="text-3xl font-display font-black text-slate-900 tracking-tight leading-none">Medical D'Lis</h1>
-              <p className="text-slate-500 mt-1.5 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse"></span>
-                Panel: {activeRole}
-              </p>
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-2 md:gap-4">
+                <div className="bg-white p-1 md:p-2 rounded-[0.6rem] md:rounded-xl shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
+                  <img src="https://cossma.com.mx/medical.png" alt="Medical D'Lis Logo" className="h-7 sm:h-10 md:h-14 w-auto object-contain drop-shadow-sm" />
+                </div>
+                <div>
+                  <h1 className="text-lg sm:text-xl md:text-3xl font-display font-black text-slate-900 tracking-tight leading-none italic">
+                    Medical <span className="text-brand-purple hidden sm:inline">D'Lis.</span>
+                  </h1>
+                  <p className="text-slate-500 mt-1 md:mt-2 text-[8px] sm:text-[9px] md:text-[11px] font-bold uppercase tracking-wider md:tracking-widest flex items-center gap-1 md:gap-2">
+                    <span className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-brand-purple animate-pulse"></span>
+                    <span className="hidden sm:inline">Panel: </span>{activeRole}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3 shrink-0">
             <div className="hidden sm:flex bg-emerald-50 p-2 px-4 rounded-full border border-emerald-100 items-center space-x-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
               <span className="text-[10px] uppercase tracking-[0.15em] font-black text-emerald-700">Sistema Conectado</span>
             </div>
-            
-            <button 
-              onClick={() => setActiveRole(null)}
-              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-purple transition-all shadow-sm"
-              title="Cambiar Perfil"
-            >
-              <LayoutDashboard className="w-5 h-5" />
-            </button>
 
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm"
+              className="flex items-center gap-2 p-2 md:p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm"
               title="Cerrar Sesión"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
         </header>
