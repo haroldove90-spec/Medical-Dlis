@@ -15,7 +15,30 @@ export interface Patient {
   name: string;
   lastVisit: string;
   service: string;
+  email?: string;
+  phone?: string;
 }
+
+export type Specialty = 'Cirugía General' | 'Medicina Estética' | 'Aparatología' | 'Podología';
+
+export interface ClinicalRecordData {
+  patientId: string;
+  specialty: Specialty;
+  medicalInfo?: {
+    history: string;
+    allergies: string;
+    bloodType: string;
+    surgicalNote: string;
+  };
+  aestheticInfo?: {
+    parameters: string;
+    sessionNumber: number;
+    totalSessions: number;
+  };
+  images: string[];
+}
+
+export type AppointmentCategory = Specialty;
 
 export interface Metric {
   label: string;
@@ -24,5 +47,3 @@ export interface Metric {
   trend: 'up' | 'down' | 'neutral';
   icon: string;
 }
-
-export type AppointmentCategory = 'Podología' | 'Cirugía General' | 'Medicina Estética';
