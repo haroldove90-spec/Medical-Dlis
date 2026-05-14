@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Calendar, FileText, Download, Clock, MapPin, User, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, FileText, Download, Clock, MapPin, User, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function PatientPortal() {
+  const [confirmed, setConfirmed] = useState(false);
   const nextAppointment = {
     date: '20 May, 2024',
     time: '11:00 AM',
@@ -77,8 +79,15 @@ export default function PatientPortal() {
                 <span className="text-sm font-medium text-slate-600">Atiende: {nextAppointment.doctor}</span>
               </div>
             </div>
-            <button className="w-full mt-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-brand-purple transition-all shadow-lg hover:shadow-brand-purple/20">
-               Confirmar Asistencia
+            <button 
+              onClick={() => setConfirmed(true)}
+              disabled={confirmed}
+              className={`w-full mt-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 ${
+                confirmed ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-brand-purple hover:shadow-brand-purple/20'
+              }`}
+            >
+               {confirmed ? <CheckCircle2 className="w-4 h-4" /> : null}
+               {confirmed ? 'Asistencia Confirmada' : 'Confirmar Asistencia'}
             </button>
           </motion.div>
         </div>

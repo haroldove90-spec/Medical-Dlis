@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Wallet, CreditCard, Banknote, PieChart, CheckCircle2, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import { Wallet, CreditCard, Banknote, PieChart, CheckCircle2, TrendingUp, Lock } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function FinanceReport() {
+  const [isClosed, setIsClosed] = useState(false);
   const financeData = {
     total: '$12,450.00',
     methods: [
@@ -80,9 +82,15 @@ export default function FinanceReport() {
           </div>
           
           <div className="mt-8 pt-6 border-t border-slate-50">
-             <button className="w-full p-4 p-4 bg-slate-900 text-white rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-purple transition-all shadow-lg">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              Realizar Cierre de Caja
+             <button 
+              onClick={() => setIsClosed(true)}
+              disabled={isClosed}
+              className={`w-full p-4 rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${
+                isClosed ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-brand-purple'
+              }`}
+             >
+              {isClosed ? <Lock className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+              {isClosed ? 'Caja Cerrada Exitosamente' : 'Realizar Cierre de Caja'}
             </button>
           </div>
         </div>

@@ -13,13 +13,15 @@ import InventoryManager from './InventoryManager';
 import StaffManager from './StaffManager';
 import PatientPortal from './PatientPortal';
 
-const mockPatients: Patient[] = [
+const INITIAL_PATIENTS: Patient[] = [
   { id: '1', name: 'Juan Pérez', lastVisit: '12 May, 2024', service: 'Cirugía General', phone: '5512345678', status: 'Confirmado', sessions: 'N/A' },
   { id: '2', name: 'María García', lastVisit: '10 May, 2024', service: 'Medicina Estética', phone: '5587654321', status: 'En Cabina', sessions: '3 de 8' },
   { id: '3', name: 'Carlos Rodríguez', lastVisit: '08 May, 2024', service: 'Podología', phone: '5599887766', status: 'Pendiente', sessions: '1 de 1' },
   { id: '4', name: 'Ana Martínez', lastVisit: '05 May, 2024', service: 'Medicina Estética', phone: '5544332211', status: 'Finalizado', sessions: '10 de 10' },
   { id: '5', name: 'Roberto Sánchez', lastVisit: '02 May, 2024', service: 'Cirugía General', phone: '5566778899', status: 'Programado', sessions: 'Pre-Op' },
   { id: '6', name: 'Laura López', lastVisit: '01 May, 2024', service: 'Podología', phone: '5511223344', status: 'Confirmado', sessions: '2 de 3' },
+  { id: '7', name: 'Elena Ramírez', lastVisit: '13 May, 2024', service: 'Medicina Estética', phone: '5522334455', status: 'Confirmado', sessions: '5 de 12' },
+  { id: '8', name: 'Diego Torres', lastVisit: '14 May, 2024', service: 'Cirugía General', phone: '5533445566', status: 'Programado', sessions: 'N/A' },
 ];
 
 const metricsData: Metric[] = [
@@ -34,15 +36,33 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ activeRole, activeSection }: DashboardProps) {
+  const [patients, setPatients] = useState<Patient[]>(INITIAL_PATIENTS);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [showFinance, setShowFinance] = useState(false);
 
-  // Filter patients based on role
-  const filteredPatients = mockPatients.filter(p => {
-    if (activeRole === Role.ESTETICA) return p.service === 'Medicina Estética';
-    if (activeRole === Role.MEDICO) return p.service === 'Cirugía General' || p.service === 'Podología';
-    return true;
+  // Filter patients based on role and search query
+  const filteredPatients = patients.filter(p => {
+    const matchesRole = activeRole === Role.ESTETICA ? p.service === 'Medicina Estética' :
+                        activeRole === Role.MEDICO ? (p.service === 'Cirugía General' || p.service === 'Podología') :
+                        true;
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          p.service.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesRole && matchesSearch;
   });
+
+  const handleAddPatient = () => {
+    const newPatient: Patient = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: 'Nuevo Paciente ' + (patients.length + 1),
+      lastVisit: new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }),
+      service: activeRole === Role.ESTETICA ? 'Medicina Estética' : 'Cirugía General',
+      phone: '5500000000',
+      status: 'Confirmado',
+      sessions: activeRole === Role.ESTETICA ? '1 de 10' : 'N/A'
+    };
+    setPatients([newPatient, ...patients]);
+  };
 
   if (activeRole === Role.PACIENTE) {
     return <PatientPortal />;
@@ -129,8 +149,8 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
             </div>
           </div>
           <div className="space-y-5">
-            {mockPatients.map((p, i) => (
-              <div key={p.id} className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex items-center justify-between hover:border-brand-purple/30 hover:shadow-2xl hover:shadow-brand-purple/10 transition-all duration-500">
+            {filteredPatients.map((p, i) => (
+              <div key={p.id} className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex items-center justify-between hover:border-brand-purple/30 hover:shadow-2xl hover:shadow-brand-purple/10 transition-all duration-500 cursor-pointer" onClick={() => setSelectedPatient(p)}>
                 <div className="flex items-center gap-8">
                   <div className="text-right w-16">
                     <p className="text-sm font-black text-slate-900">09:{i}0</p>
@@ -194,7 +214,10 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
            </div>
         </section>
 
-        <div className="p-10 border-2 border-dashed border-slate-200 rounded-[3rem] flex flex-col items-center justify-center text-center gap-4 hover:border-brand-purple/40 hover:bg-brand-purple/5 transition-all cursor-pointer group">
+        <div 
+          onClick={handleAddPatient}
+          className="p-10 border-2 border-dashed border-slate-200 rounded-[3rem] flex flex-col items-center justify-center text-center gap-4 hover:border-brand-purple/40 hover:bg-brand-purple/5 transition-all cursor-pointer group"
+        >
            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Users className="w-8 h-8 text-slate-400 group-hover:text-brand-purple transition-colors" />
            </div>
@@ -223,6 +246,8 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
           <input 
             type="text" 
             placeholder="Buscar por nombre o servicio..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-14 pr-8 py-5 bg-white border border-slate-100 rounded-[2rem] text-xs font-bold w-full md:w-96 shadow-sm outline-none focus:border-brand-purple/40 ring-0 focus:ring-4 focus:ring-brand-purple/5 transition-all" 
           />
         </div>

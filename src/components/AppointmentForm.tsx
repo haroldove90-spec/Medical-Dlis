@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Calendar, Clock, User, ChevronDown, Plus } from 'lucide-react';
 import { AppointmentCategory, Role } from '../types';
+import { motion } from 'motion/react';
 
 interface AppointmentFormProps {
   activeRole?: Role;
@@ -19,11 +20,28 @@ export default function AppointmentForm({ activeRole }: AppointmentFormProps) {
   };
 
   const [category, setCategory] = useState<AppointmentCategory>(getDefaultCategory());
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const categories: AppointmentCategory[] = ['Podología', 'Cirugía General', 'Medicina Estética'];
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSuccess(true);
+    setTimeout(() => setIsSuccess(false), 3000);
+  };
+
   return (
-    <div className="dashboard-card h-full border-none shadow-sm">
+    <form onSubmit={handleSubmit} className="dashboard-card h-full border-none shadow-sm relative overflow-hidden">
+      {isSuccess && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute inset-x-0 top-0 p-4 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest text-center z-50 flex items-center justify-center gap-2"
+        >
+          <Plus className="w-3 h-3 rotate-45" /> 
+          Agendado con éxito
+        </motion.div>
+      )}
       <div className="flex items-center justify-between mb-8">
         <h3 className="text-xl font-display font-black text-slate-900">
           {activeRole === Role.ESTETICA ? 'Nueva Sesión' : 'Nueva Cita'}
@@ -94,7 +112,7 @@ export default function AppointmentForm({ activeRole }: AppointmentFormProps) {
           {activeRole === Role.ESTETICA ? 'Registrar Sesión' : 'Agendar Cita'}
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 

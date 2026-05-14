@@ -3,11 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Package, AlertCircle, ShoppingCart, ArrowUpRight } from 'lucide-react';
+import { useState } from 'react';
+import { Package, AlertCircle, ShoppingCart, Search } from 'lucide-react';
 import { InventoryItem } from '../types';
 import { motion } from 'motion/react';
 
-const mockInventory: InventoryItem[] = [
+const INITIAL_INVENTORY: InventoryItem[] = [
   { id: '1', name: 'Botox (Vial 100u)', stock: 5, minStock: 3, category: 'Estética' },
   { id: '2', name: 'Relleno Hialurónico', stock: 12, minStock: 10, category: 'Estética' },
   { id: '3', name: 'Kits Sutura Pro', stock: 2, minStock: 5, category: 'Cirugía' },
@@ -22,20 +23,41 @@ const mockInventory: InventoryItem[] = [
 ];
 
 export default function InventoryManager() {
+  const [inventory, setInventory] = useState<InventoryItem[]>(INITIAL_INVENTORY);
+  const [search, setSearch] = useState('');
+
+  const handleOrder = (id: string) => {
+    setInventory(prev => prev.map(item => 
+      item.id === id ? { ...item, stock: item.stock + 10 } : item
+    ));
+  };
+
+  const filteredItems = inventory.filter(item => 
+    item.name.toLowerCase().includes(search.toLowerCase()) || 
+    item.category.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8">
         <div>
           <h3 className="text-xl font-display font-black text-slate-900">Control de Insumos</h3>
           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Supervisión de Inventario Crítico</p>
         </div>
-        <div className="p-3 bg-slate-900 rounded-2xl text-white">
-          <Package className="w-6 h-6" />
+        <div className="relative w-full md:w-64">
+          <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Buscar insumo..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold outline-none focus:border-brand-purple/30 transition-all"
+          />
         </div>
       </div>
 
-      <div className="space-y-4">
-        {mockInventory.map((item, idx) => {
+      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+        {filteredItems.map((item, idx) => {
           const isLow = item.stock <= item.minStock;
           return (
             <motion.div 
@@ -48,7 +70,7 @@ export default function InventoryManager() {
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className={`p-2 rounded-xl ${isLow ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500'}`}>
+                <div className={`p-2 rounded-xl shadow-sm ${isLow ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500'}`}>
                    {isLow ? <AlertCircle className="w-4 h-4" /> : <Package className="w-4 h-4" />}
                 </div>
                 <div>
@@ -57,18 +79,21 @@ export default function InventoryManager() {
                 </div>
               </div>
               
-              <div className="text-right">
-                <div className="flex items-center gap-2 justify-end">
-                  <span className={`text-sm font-black ${isLow ? 'text-rose-600' : 'text-slate-900'}`}>
-                    {item.stock} unidades
-                  </span>
-                  {isLow && (
-                    <button className="p-1 px-2 bg-rose-600 text-white text-[8px] font-black uppercase rounded-lg hover:bg-rose-700 transition-colors">
-                      Pedir
-                    </button>
-                  )}
+              <div className="text-right flex items-center gap-6">
+                <div>
+                  <p className={`text-sm font-black ${isLow ? 'text-rose-600' : 'text-slate-900'}`}>
+                    {item.stock} uds
+                  </p>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase">Mín: {item.minStock}</p>
                 </div>
-                <p className="text-[10px] text-slate-400 font-medium">Mín. requerido: {item.minStock}</p>
+                <button 
+                  onClick={() => handleOrder(item.id)}
+                  className={`p-2 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                    isLow ? 'bg-rose-600 text-white shadow-lg shadow-rose-200' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                  }`}
+                >
+                  Surtir
+                </button>
               </div>
             </motion.div>
           );

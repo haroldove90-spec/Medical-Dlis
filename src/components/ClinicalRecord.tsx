@@ -16,7 +16,8 @@ import {
   Activity,
   Image as ImageIcon,
   PenTool,
-  X
+  X,
+  CheckCircle2
 } from 'lucide-react';
 import { Patient, Specialty, ClinicalRecordData, Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -41,6 +42,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
 
   const [specialty, setSpecialty] = useState<Specialty>(getDefaultSpecialty());
   const [note, setNote] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string>(
     activeSection === 'consent' ? 'consent' : 
     activeSection === 'recipe' ? 'recipe' : 'evolution'
@@ -122,6 +124,11 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
       const ctx = canvas.getContext('2d');
       ctx?.beginPath();
     }
+  };
+
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => setIsSaving(false), 2000);
   };
 
   const draw = (e: any) => {
@@ -230,9 +237,13 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
                 </select>
               </div>
             )}
-            <button className="bg-brand-purple hover:bg-brand-purple-dark text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md">
-              <Save className="w-4 h-4" />
-              {activeTab === 'recipe' ? 'Imprimir Receta' : 'Guardar Cambios'}
+            <button 
+              onClick={handleSave}
+              disabled={isSaving}
+              className={`${isSaving ? 'bg-emerald-500' : 'bg-brand-purple hover:bg-brand-purple-dark'} text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md`}
+            >
+              {isSaving ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+              {isSaving ? 'Guardado' : (activeTab === 'recipe' ? 'Imprimir Receta' : 'Guardar Cambios')}
             </button>
           </div>
         </div>
