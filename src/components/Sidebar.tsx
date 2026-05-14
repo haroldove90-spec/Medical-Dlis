@@ -26,33 +26,33 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
     switch (activeRole) {
       case Role.ADMIN:
         return [
-          { id: 'metrics', icon: LayoutDashboard, label: 'Dashboard' },
-          { id: 'finance', icon: DollarSign, label: 'Finanzas' },
-          { id: 'inventory', icon: Package, label: 'Inventario' },
-          { id: 'staff', icon: Users, label: 'Personal' },
+          { id: 'metrics', icon: LayoutDashboard, label: 'Dashboard de Métricas' },
+          { id: 'finance', icon: DollarSign, label: 'Gestión Financiera' },
+          { id: 'inventory', icon: Package, label: 'Control de Inventario' },
+          { id: 'staff', icon: Users, label: 'Gestión de Personal' },
         ];
       case Role.MEDICO:
         return [
-          { id: 'patients', icon: Users, label: 'Pacientes' },
-          { id: 'records', icon: UserRound, label: 'Expedientes' },
-          { id: 'docs', icon: ClipboardList, label: 'Recetario' },
+          { id: 'records', icon: UserRound, label: 'Expediente Clínico' },
+          { id: 'consent', icon: ClipboardList, label: 'Consentimientos' },
+          { id: 'recipe', icon: Package, label: 'Recetario Digital' },
         ];
       case Role.ESTETICA:
         return [
-          { id: 'cabin', icon: Sparkles, label: 'Cabina' },
-          { id: 'photos', icon: UserRound, label: 'Evolución' },
-          { id: 'packages', icon: ClipboardList, label: 'Sesiones' },
+          { id: 'cabin', icon: Sparkles, label: 'Ficha de Cabina' },
+          { id: 'photos', icon: UserRound, label: 'Seguimiento Fotos' },
+          { id: 'sessions', icon: ClipboardList, label: 'Control Sesiones' },
         ];
       case Role.RECEPCION:
         return [
-          { id: 'agenda', icon: LayoutDashboard, label: 'Agenda' },
-          { id: 'patients', icon: Users, label: 'Pacientes' },
-          { id: 'box', icon: DollarSign, label: 'Caja Reg.' },
+          { id: 'agenda', icon: LayoutDashboard, label: 'Agenda Multidisciplinaria' },
+          { id: 'registration', icon: Users, label: 'Registro Pacientes' },
+          { id: 'box', icon: DollarSign, label: 'Caja y Cobranza' },
         ];
       case Role.PACIENTE:
         return [
-          { id: 'portal', icon: User, label: 'Mi Portal' },
-          { id: 'appointments', icon: LayoutDashboard, label: 'Citas' },
+          { id: 'appointments', icon: LayoutDashboard, label: 'Consulta de Citas' },
+          { id: 'results', icon: ClipboardList, label: 'Resultados y Recetas' },
         ];
       default:
         return [];

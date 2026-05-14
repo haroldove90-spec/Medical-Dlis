@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound } from 'lucide-react';
+import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Image as ImageIcon } from 'lucide-react';
 import { Patient, Metric, Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -153,9 +153,14 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
                          <p className="text-[11px] font-black text-slate-900 uppercase tracking-tighter">{p.status || 'Confirmado'}</p>
                       </div>
                    </div>
-                   <button className="p-4 bg-slate-50 text-slate-300 rounded-2xl group-hover:bg-brand-purple group-hover:text-white group-hover:rotate-[-5deg] transition-all duration-500">
-                      <ChevronRight className="w-5 h-5" />
-                   </button>
+                   <div className="flex items-center gap-2">
+                      <button className="p-4 bg-emerald-50 text-emerald-500 border border-emerald-100 rounded-2xl hover:bg-emerald-500 hover:text-white transition-all group/wa">
+                         <Sparkles className="w-4 h-4 group-hover/wa:rotate-12" />
+                      </button>
+                      <button className="p-4 bg-slate-50 text-slate-300 rounded-2xl group-hover:bg-brand-purple group-hover:text-white group-hover:rotate-[-5deg] transition-all duration-500">
+                         <ChevronRight className="w-5 h-5" />
+                      </button>
+                   </div>
                 </div>
               </div>
             ))}
@@ -207,9 +212,11 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-4">
         <div>
           <h2 className="text-3xl font-display font-black text-slate-900 tracking-tight leading-none italic">
-            Control de <span className="text-brand-purple">Expedientes.</span>
+            {activeSection === 'photos' ? 'Seguimiento' : 'Control de'} <span className="text-brand-purple">{activeSection === 'photos' ? 'Fotográfico.' : 'Expedientes.'}</span>
           </h2>
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.25em] mt-3">Historial clínico y seguimiento activo</p>
+          <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.25em] mt-3">
+            {activeSection === 'photos' ? 'Galería de evolución por paciente' : 'Historial clínico y seguimiento activo'}
+          </p>
         </div>
         <div className="relative group">
           <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-brand-purple" />
@@ -221,50 +228,150 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
         </div>
       </header>
 
-      <div className="grid grid-cols-1 gap-5">
-        {filteredPatients.map((patient, i) => (
-          <motion.div 
-            key={patient.id}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
-            onClick={() => setSelectedPatient(patient)}
-            className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between cursor-pointer hover:border-brand-purple/40 hover:shadow-2xl transition-all duration-500"
-          >
-            <div className="flex items-center gap-8 mb-6 sm:mb-0">
-              <div className="relative">
-                <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-3xl flex items-center justify-center font-black text-brand-purple text-xl shadow-inner group-hover:bg-brand-purple group-hover:text-white transition-all transform group-hover:rotate-[-8deg] duration-500">
-                  {patient.name[0]}
+      {activeSection === 'photos' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+           {filteredPatients.map((p, i) => (
+             <motion.div
+               key={p.id}
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               transition={{ delay: i * 0.1 }}
+               onClick={() => setSelectedPatient(p)}
+               className="dashboard-card group cursor-pointer hover:border-brand-purple/40"
+             >
+                <div className="flex items-center gap-4 mb-6">
+                   <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center font-black text-brand-purple">
+                      {p.name[0]}
+                   </div>
+                   <div>
+                      <h4 className="text-sm font-black text-slate-900 group-hover:text-brand-purple">{p.name}</h4>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.service}</p>
+                   </div>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full"></div>
-              </div>
-              <div>
-                <h4 className="text-lg font-black text-slate-900 group-hover:text-brand-purple transition-colors mb-2">{patient.name}</h4>
-                <div className="flex flex-wrap items-center gap-4">
-                  <span className="text-[10px] font-black bg-slate-100 text-slate-500 p-1 px-3 rounded-xl uppercase tracking-widest">{patient.service}</span>
-                  <div className="w-1.5 h-1.5 bg-slate-200 rounded-full"></div>
-                  <span className="text-[10px] text-brand-purple font-black uppercase tracking-widest">{patient.lastVisit}</span>
+                <div className="grid grid-cols-3 gap-2">
+                   {[1,2,3].map(j => (
+                     <div key={j} className="aspect-square bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100">
+                        <ImageIcon className="w-4 h-4 text-slate-200" />
+                     </div>
+                   ))}
+                </div>
+                <div className="mt-6 flex justify-between items-center bg-slate-50 p-3 rounded-xl">
+                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">3 Archivos</span>
+                   <span className="text-[9px] font-black text-brand-purple uppercase tracking-widest">Ver Todo</span>
+                </div>
+             </motion.div>
+           ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-5">
+          {filteredPatients.map((patient, i) => (
+            <motion.div 
+              key={patient.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 }}
+              onClick={() => setSelectedPatient(patient)}
+              className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between cursor-pointer hover:border-brand-purple/40 hover:shadow-2xl transition-all duration-500"
+            >
+              <div className="flex items-center gap-8 mb-6 sm:mb-0">
+                <div className="relative">
+                  <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-3xl flex items-center justify-center font-black text-brand-purple text-xl shadow-inner group-hover:bg-brand-purple group-hover:text-white transition-all transform group-hover:rotate-[-8deg] duration-500">
+                    {patient.name[0]}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full"></div>
+                </div>
+                <div>
+                  <h4 className="text-lg font-black text-slate-900 group-hover:text-brand-purple transition-colors mb-2">{patient.name}</h4>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span className="text-[10px] font-black bg-slate-100 text-slate-500 p-1 px-3 rounded-xl uppercase tracking-widest">{patient.service}</span>
+                    <div className="w-1.5 h-1.5 bg-slate-200 rounded-full"></div>
+                    <span className="text-[10px] text-brand-purple font-black uppercase tracking-widest">{patient.lastVisit}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-10">
-              <div className="hidden lg:flex flex-col items-end">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Estatus Médico</p>
-                <div className="flex items-center gap-3">
-                  <div className="px-3 py-1.5 bg-slate-950 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/5">{patient.status || 'Activo'}</div>
-                  {patient.sessions !== 'N/A' && (
-                    <span className="text-[11px] font-black text-brand-purple italic">{patient.sessions}</span>
-                  )}
+              
+              <div className="flex items-center gap-10">
+                <div className="hidden lg:flex flex-col items-end">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Estatus Médico</p>
+                  <div className="flex items-center gap-3">
+                    <div className="px-3 py-1.5 bg-slate-950 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/5">{patient.status || 'Activo'}</div>
+                    {patient.sessions !== 'N/A' && (
+                      <span className="text-[11px] font-black text-brand-purple italic">{patient.sessions}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="p-4 bg-slate-50 rounded-2xl text-slate-300 group-hover:bg-brand-purple/10 group-hover:text-brand-purple transition-all duration-500 border border-slate-100 group-hover:border-brand-purple/20">
+                  <FileText className="w-6 h-6" />
                 </div>
               </div>
-              <div className="p-4 bg-slate-50 rounded-2xl text-slate-300 group-hover:bg-brand-purple/10 group-hover:text-brand-purple transition-all duration-500 border border-slate-100 group-hover:border-brand-purple/20">
-                <FileText className="w-6 h-6" />
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderBoxView = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+       <div className="lg:col-span-4 space-y-8">
+          <section className="p-10 bg-brand-purple rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
+             <DollarSign className="absolute right-[-10%] top-[-10%] w-48 h-48 opacity-10" />
+             <div className="relative z-10">
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">Ingresos del Turno</p>
+                <h4 className="text-5xl font-black italic">$4,860</h4>
+                <div className="h-px bg-white/20 my-8"></div>
+                <div className="space-y-4">
+                   <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+                      <span>Efectivo</span>
+                      <span>$2,450</span>
+                   </div>
+                   <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+                      <span>Tarjeta</span>
+                      <span>$2,410</span>
+                   </div>
+                </div>
+                <button className="w-full py-5 bg-white text-brand-purple rounded-2xl text-[10px] font-black uppercase tracking-widest mt-12 shadow-xl hover:scale-[1.02] transition-all">
+                   Cierre de Caja
+                </button>
+             </div>
+          </section>
+       </div>
+       <div className="lg:col-span-8">
+          <section className="dashboard-card border-none shadow-sm p-10">
+             <div className="flex items-center justify-between mb-10">
+                <h3 className="text-2xl font-display font-black text-slate-900 tracking-tight">Ventas Recientes</h3>
+                <button className="p-4 bg-slate-50 text-brand-purple rounded-2xl text-[10px] font-black uppercase tracking-widest">Reporte PDF</button>
+             </div>
+             <div className="space-y-4">
+                {[
+                  { id: 'V-001', client: 'Beatriz Solis', amount: '$1,200', method: 'Tarjeta', status: 'Pagado' },
+                  { id: 'V-002', client: 'Héctor Moreno', amount: '$850', method: 'Efectivo', status: 'Pagado' },
+                  { id: 'V-003', client: 'Carla Ruiz', amount: '$2,810', method: 'Tarjeta', status: 'Pagado' },
+                ].map((v, i) => (
+                  <div key={v.id} className="p-6 bg-slate-50 border border-slate-100 rounded-[2rem] flex items-center justify-between">
+                     <div className="flex items-center gap-6">
+                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-slate-200">
+                           <DollarSign className="w-5 h-5 text-emerald-500" />
+                        </div>
+                        <div>
+                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{v.id}</p>
+                           <h4 className="text-sm font-black text-slate-900">{v.client}</h4>
+                        </div>
+                     </div>
+                     <div className="flex items-center gap-8">
+                        <div className="text-right">
+                           <p className="text-sm font-black text-slate-900">{v.amount}</p>
+                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{v.method}</p>
+                        </div>
+                        <div className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                           {v.status}
+                        </div>
+                     </div>
+                  </div>
+                ))}
+             </div>
+          </section>
+       </div>
     </div>
   );
 
@@ -289,6 +396,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
                 patient={selectedPatient} 
                 onClose={() => setSelectedPatient(null)}
                 activeRole={activeRole}
+                activeSection={activeSection}
               />
             </motion.div>
           </motion.div>
@@ -308,12 +416,16 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
 
             {/* RECEPTION SECTIONS */}
             {activeSection === 'agenda' && renderAgenda()}
-            {activeSection === 'box' && renderAgenda()}
+            {activeSection === 'registration' && renderAgenda()}
+            {activeSection === 'box' && renderBoxView()}
             
             {/* CLINICAL SECTIONS (MEDIC & AESTHETIC) */}
-            {(activeSection === 'patients' || activeSection === 'cabin' || activeSection === 'records' || activeSection === 'photos' || activeSection === 'docs' || activeSection === 'packages') && renderClinicalView()}
+            {(activeSection === 'records' || activeSection === 'consent' || activeSection === 'recipe' || 
+              activeSection === 'cabin' || activeSection === 'photos' || activeSection === 'sessions') && renderClinicalView()}
             
-            {/* FALLBACK */}
+            {/* PATIENT SECTIONS */}
+            {activeSection === 'appointments' && renderAgenda()}
+            {activeSection === 'results' && renderClinicalView()}
             {activeSection === 'default' && (
               <div className="h-96 flex flex-col items-center justify-center text-slate-400 space-y-6">
                  <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center border border-slate-100 animate-pulse">

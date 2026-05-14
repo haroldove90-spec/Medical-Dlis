@@ -26,9 +26,10 @@ interface ClinicalRecordProps {
   patient: Patient;
   onClose: () => void;
   activeRole: Role;
+  activeSection: string;
 }
 
-export default function ClinicalRecord({ patient, onClose, activeRole }: ClinicalRecordProps) {
+export default function ClinicalRecord({ patient, onClose, activeRole, activeSection }: ClinicalRecordProps) {
   // Default specialty logic based on role
   const getDefaultSpecialty = (): Specialty => {
     if (activeRole === Role.ESTETICA) return 'Medicina Estética';
@@ -40,8 +41,13 @@ export default function ClinicalRecord({ patient, onClose, activeRole }: Clinica
 
   const [specialty, setSpecialty] = useState<Specialty>(getDefaultSpecialty());
   const [note, setNote] = useState('');
+  const [activeTab, setActiveTab] = useState<string>(
+    activeSection === 'consent' ? 'consent' : 
+    activeSection === 'recipe' ? 'recipe' : 'evolution'
+  );
   
   const draName = "Dra. Lluvia Gutiérrez";
+  const professionalCeadula = "CED. PROF. 12345678";
 
   const mockHistory = [
     { date: '12 May, 2024', type: 'Nota Evolución', doctor: draName, content: specialty === 'Cirugía General' ? 'Paciente post-operado de colecistectomía. Heridas limpias, sin signos de infección. Refiere dolor leve 2/10.' : 'Aplicación de toxina botulínica en frente y patas de gallo. Sin complicaciones inmediatas.' },
@@ -58,6 +64,13 @@ export default function ClinicalRecord({ patient, onClose, activeRole }: Clinica
   useEffect(() => {
     setNote(defaultNote);
   }, [specialty]);
+
+  // Handle section sync
+  useEffect(() => {
+    if (activeSection === 'consent') setActiveTab('consent');
+    else if (activeSection === 'recipe') setActiveTab('recipe');
+    else setActiveTab('evolution');
+  }, [activeSection]);
   
   // Signature Canvas Ref
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -152,38 +165,90 @@ export default function ClinicalRecord({ patient, onClose, activeRole }: Clinica
           </button>
           <div>
             <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">
-              {activeRole === Role.ESTETICA ? 'Ficha Estética' : 'Expediente Clínico'}
+              {activeTab === 'evolution' ? (activeRole === Role.ESTETICA ? 'Ficha de Cabina' : 'Expediente Clínico') : 
+               activeTab === 'consent' ? 'Consentimiento Informado' : 'Recetario Digital'}
             </h2>
             <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">{patient.name}</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          {activeRole !== Role.ESTETICA && (
-            <div className="bg-slate-50 py-1 px-3 rounded-lg flex items-center gap-2 border border-slate-100">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Especialidad:</span>
-              <select 
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value as Specialty)}
-                className="bg-transparent text-xs font-bold text-brand-purple focus:outline-none cursor-pointer"
-              >
-                <option value="Cirugía General">Cirugía General</option>
-                <option value="Medicina Estética">Medicina Estética</option>
-                <option value="Aparatología">Aparatología</option>
-                <option value="Podología">Podología</option>
-              </select>
-            </div>
-          )}
-          <button className="bg-brand-purple hover:bg-brand-purple-dark text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md">
-            <Save className="w-4 h-4" />
-            Finalizar & Guardar
-          </button>
+        <div className="flex items-center gap-6">
+          <nav className="hidden md:flex bg-slate-100 p-1.5 rounded-2xl">
+            {(activeRole === Role.MEDICO || activeRole === Role.ADMIN) && (
+              <>
+                <button 
+                  onClick={() => setActiveTab('evolution')}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'evolution' ? 'bg-white text-brand-purple shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                  Expediente
+                </button>
+                <button 
+                  onClick={() => setActiveTab('consent')}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'consent' ? 'bg-white text-brand-purple shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                  Consentimiento
+                </button>
+                <button 
+                  onClick={() => setActiveTab('recipe')}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'recipe' ? 'bg-white text-brand-purple shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                  Recetario
+                </button>
+              </>
+            )}
+            {activeRole === Role.ESTETICA && (
+              <>
+                <button 
+                  onClick={() => setActiveTab('evolution')}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'evolution' ? 'bg-white text-brand-purple shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                  Ficha Cabina
+                </button>
+                <button 
+                  onClick={() => setActiveTab('recipe')}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'recipe' ? 'bg-white text-brand-purple shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                  Recomendaciones
+                </button>
+              </>
+            )}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            {activeRole !== Role.ESTETICA && activeTab === 'evolution' && (
+              <div className="bg-slate-50 py-1 px-3 rounded-lg flex items-center gap-2 border border-slate-100">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Especialidad:</span>
+                <select 
+                  value={specialty}
+                  onChange={(e) => setSpecialty(e.target.value as Specialty)}
+                  className="bg-transparent text-xs font-bold text-brand-purple focus:outline-none cursor-pointer"
+                >
+                  <option value="Cirugía General">Cirugía General</option>
+                  <option value="Medicina Estética">Medicina Estética</option>
+                  <option value="Aparatología">Aparatología</option>
+                  <option value="Podología">Podología</option>
+                </select>
+              </div>
+            )}
+            <button className="bg-brand-purple hover:bg-brand-purple-dark text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md">
+              <Save className="w-4 h-4" />
+              {activeTab === 'recipe' ? 'Imprimir Receta' : 'Guardar Cambios'}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Main Form Area */}
       <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <AnimatePresence mode="wait">
+          {activeTab === 'evolution' && (
+            <motion.div 
+              key="tab-evolution"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className="grid grid-cols-1 lg:grid-cols-12 gap-10"
+            >
           
           {/* Left Column: Form Fields */}
           <div className="lg:col-span-8 space-y-8">
@@ -388,8 +453,128 @@ export default function ClinicalRecord({ patient, onClose, activeRole }: Clinica
           <div className="lg:col-span-4 lg:sticky lg:top-0 h-fit space-y-6">
             <DocumentManager patient={patient} specialty={specialty} activeRole={activeRole} />
           </div>
-        </div>
-      </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'consent' && (
+        <motion.div 
+          key="tab-consent"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.02 }}
+          className="max-w-3xl mx-auto space-y-10 py-10"
+        >
+          <div className="p-12 bg-slate-50 border border-slate-100 rounded-[3rem] shadow-inner font-serif text-slate-800 leading-relaxed space-y-6">
+            <div className="text-center mb-10">
+               <h3 className="text-xl font-bold uppercase tracking-widest text-slate-900">CONSENTIMIENTO INFORMADO</h3>
+               <p className="text-[10px] font-bold text-brand-purple mt-2">MEDICAL D'LIS - CLÍNICA DE ESPECIALIDADES</p>
+            </div>
+            
+            <p className="text-sm">
+              Yo, <strong>{patient.name}</strong>, por mi propio derecho y en pleno uso de mis facultades mentales, 
+              otorgo mi consentimiento libre y espontáneo para que el personal médico de <strong>Medical D'Lis</strong>, 
+              bajo la supervisión de la <strong>Dra. Lluvia Gutiérrez</strong>, realice el procedimiento de:
+            </p>
+
+            <div className="p-5 bg-white border border-slate-200 rounded-2xl text-center font-bold text-brand-purple uppercase tracking-widest">
+               {specialty}
+            </div>
+
+            <p className="text-sm">
+               Entiendo que el procedimiento conlleva riesgos inherentes como hematomas, inflamación, infección o reacciones adversas. 
+               Se me ha explicado la técnica, los beneficios esperados y las alternativas existentes. 
+               Acepto seguir las indicaciones post-procedimiento para minimizar complicaciones.
+            </p>
+
+            <div className="pt-20 flex flex-col items-center">
+               <div className="w-64 h-32 bg-white border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center p-2">
+                  <canvas 
+                    ref={canvasRef}
+                    width={256}
+                    height={128}
+                    onMouseDown={startDrawing}
+                    onMouseUp={stopDrawing}
+                    onMouseMove={draw}
+                    className="w-full h-full cursor-crosshair"
+                  />
+               </div>
+               <div className="w-64 h-px bg-slate-400 mt-4"></div>
+               <p className="text-[10px] font-black uppercase tracking-widest mt-2">{patient.name}</p>
+               <p className="text-[9px] text-slate-400">FIRMA DEL PACIENTE</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'recipe' && (
+        <motion.div 
+          key="tab-recipe"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="max-w-4xl mx-auto py-10"
+        >
+          <div className="bg-white border-4 border-slate-100 rounded-[3rem] p-16 shadow-2xl relative overflow-hidden">
+            <div className="flex justify-between items-start mb-16">
+               <div className="flex items-center gap-6">
+                 <div className="w-24 h-24 bg-brand-purple rounded-[2rem] flex items-center justify-center overflow-hidden shadow-xl border-4 border-white">
+                    <img 
+                      src="/1000305383.jpg" 
+                      alt="Logo" 
+                      className="w-full h-full object-cover" 
+                      referrerPolicy="no-referrer"
+                    />
+                 </div>
+                 <div>
+                   <h3 className="text-2xl font-display font-black text-slate-900 tracking-tighter leading-none italic">Medical <span className="text-brand-purple">D'Lis.</span></h3>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Clínica de Especialidades</p>
+                 </div>
+               </div>
+               <div className="text-right">
+                  <p className="text-[11px] font-black text-slate-900 uppercase">Dra. Lluvia Gutiérrez</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{professionalCeadula}</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">CP: 49000, JALISCO, MÉXICO</p>
+               </div>
+            </div>
+
+            <div className="space-y-12 mb-16">
+               <div className="flex items-baseline gap-4 border-b border-slate-100 pb-2">
+                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Paciente:</span>
+                  <span className="text-sm font-bold text-slate-900 uppercase">{patient.name}</span>
+                  <span className="flex-1"></span>
+                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Fecha:</span>
+                  <span className="text-sm font-bold text-slate-900">{new Date().toLocaleDateString('es-MX')}</span>
+               </div>
+
+               <div className="min-h-[400px] py-10">
+                  <div className="flex items-center gap-4 text-brand-purple mb-8">
+                     <span className="text-4xl font-black italic">Rx</span>
+                     <div className="h-px flex-1 bg-brand-purple/10"></div>
+                  </div>
+                  <textarea 
+                     placeholder="Indique medicamentos, dosis y frecuencia..."
+                     className="w-full h-96 border-none focus:ring-0 focus:outline-none text-base font-medium text-slate-700 bg-transparent resize-none leading-relaxed"
+                     defaultValue={"1. Ketorolaco 10mg - 1 tableta cada 8 horas por 3 días.\n2. Amoxicilina 500mg - 1 tableta cada 8 horas por 7 días.\n3. Reposo absoluto por 48 horas.\n4. Aplicación de frío local en zona tratada."}
+                  />
+               </div>
+            </div>
+
+            <div className="flex border-t border-slate-100 pt-10">
+               <div className="w-1/2 pr-10 border-r border-slate-100">
+                  <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-4 italic">Fórmula / Indicaciones</p>
+                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed italic">Tratamiento sugerido según valoración clínica. Cualquier reacción adversa consultar a su médico de inmediato.</p>
+               </div>
+               <div className="w-1/2 pl-10 flex flex-col items-center">
+                  <div className="w-48 h-px bg-slate-300 mb-2"></div>
+                  <p className="text-[10px] font-black text-slate-900 uppercase">{draName}</p>
+                  <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">Firma del Profesional</p>
+               </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </div>
     </motion.div>
   );
 }
