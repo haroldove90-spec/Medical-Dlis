@@ -13,17 +13,6 @@ import InventoryManager from './InventoryManager';
 import StaffManager from './StaffManager';
 import PatientPortal from './PatientPortal';
 
-const INITIAL_PATIENTS: Patient[] = [
-  { id: '1', name: 'Juan Pérez', lastVisit: '12 May, 2024', service: 'Cirugía General', phone: '5512345678', status: 'Confirmado', sessions: 'N/A' },
-  { id: '2', name: 'María García', lastVisit: '10 May, 2024', service: 'Medicina Estética', phone: '5587654321', status: 'En Cabina', sessions: '3 de 8' },
-  { id: '3', name: 'Carlos Rodríguez', lastVisit: '08 May, 2024', service: 'Podología', phone: '5599887766', status: 'Pendiente', sessions: '1 de 1' },
-  { id: '4', name: 'Ana Martínez', lastVisit: '05 May, 2024', service: 'Medicina Estética', phone: '5544332211', status: 'Finalizado', sessions: '10 de 10' },
-  { id: '5', name: 'Roberto Sánchez', lastVisit: '02 May, 2024', service: 'Cirugía General', phone: '5566778899', status: 'Programado', sessions: 'Pre-Op' },
-  { id: '6', name: 'Laura López', lastVisit: '01 May, 2024', service: 'Podología', phone: '5511223344', status: 'Confirmado', sessions: '2 de 3' },
-  { id: '7', name: 'Elena Ramírez', lastVisit: '13 May, 2024', service: 'Medicina Estética', phone: '5522334455', status: 'Confirmado', sessions: '5 de 12' },
-  { id: '8', name: 'Diego Torres', lastVisit: '14 May, 2024', service: 'Cirugía General', phone: '5533445566', status: 'Programado', sessions: 'N/A' },
-];
-
 const metricsData: Metric[] = [
   { label: 'Citas del día', value: 12, change: '+20%', trend: 'up', icon: 'CalendarCheck' },
   { label: 'Pacientes nuevos', value: 48, change: '+12%', trend: 'up', icon: 'Users' },
@@ -35,8 +24,50 @@ interface DashboardProps {
   activeSection: string;
 }
 
+export const INITIAL_PATIENTS: Patient[] = [
+  { 
+    id: '1', 
+    name: 'Ana García López', 
+    age: 28, 
+    lastVisit: '12 May, 2024', 
+    status: 'Activo', 
+    phone: '55-1234-5678', 
+    email: 'ana.garcia@email.com',
+    gender: 'Femenino',
+    bloodType: 'O+',
+    sessions: '3 de 10',
+    service: 'Medicina Estética'
+  },
+  { 
+    id: '2', 
+    name: 'Carlos Ruiz Martínez', 
+    age: 35, 
+    lastVisit: '05 May, 2024', 
+    status: 'Seguimiento', 
+    phone: '55-8765-4321', 
+    email: 'carlos.ruiz@email.com',
+    gender: 'Masculino',
+    bloodType: 'A+',
+    sessions: '8 de 12',
+    service: 'Cirugía General'
+  },
+  { 
+    id: '3', 
+    name: 'Elena Rodríguez Silva', 
+    age: 42, 
+    lastVisit: '20 Abr, 2024', 
+    status: 'Nuevo', 
+    phone: '55-4433-2211', 
+    email: 'elena.rodriguez@email.com',
+    gender: 'Femenino',
+    bloodType: 'AB-',
+    sessions: '1 de 5',
+    service: 'Podología'
+  },
+];
+
 export default function Dashboard({ activeRole, activeSection }: DashboardProps) {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<Patient[]>(INITIAL_PATIENTS);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFinance, setShowFinance] = useState(false);
@@ -65,7 +96,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
   };
 
   if (activeRole === Role.PACIENTE) {
-    return <PatientPortal />;
+    return <PatientPortal activeSection={activeSection} />;
   }
 
   // --- RENDER HELPERS BY SECTION ---
@@ -230,15 +261,28 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
     </div>
   );
 
+  const getSectionTitle = () => {
+    switch (activeSection) {
+      case 'photos': return { title: 'Seguimiento', highlight: 'Fotográfico.', sub: 'Galería de evolución por paciente' };
+      case 'consent': return { title: 'Consentimientos', highlight: 'Informados.', sub: 'Gestión de firmas y documentos legales' };
+      case 'recipe': return { title: 'Recetarios', highlight: 'Digitales.', sub: 'Control de prescripciones y recomendaciones' };
+      case 'cabin': return { title: 'Fichas de', highlight: 'Cabina.', sub: 'Parámetros técnicos y evolución estética' };
+      case 'sessions': return { title: 'Control de', highlight: 'Sesiones.', sub: 'Paquetes y tratamientos activos' };
+      default: return { title: 'Control de', highlight: 'Expedientes.', sub: 'Historial clínico y seguimiento activo' };
+    }
+  };
+
+  const sectionInfo = getSectionTitle();
+
   const renderClinicalView = () => (
     <div className="space-y-10">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-4">
         <div>
           <h2 className="text-3xl font-display font-black text-slate-900 tracking-tight leading-none italic">
-            {activeSection === 'photos' ? 'Seguimiento' : 'Control de'} <span className="text-brand-purple">{activeSection === 'photos' ? 'Fotográfico.' : 'Expedientes.'}</span>
+            {sectionInfo.title} <span className="text-brand-purple">{sectionInfo.highlight}</span>
           </h2>
           <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.25em] mt-3">
-            {activeSection === 'photos' ? 'Galería de evolución por paciente' : 'Historial clínico y seguimiento activo'}
+            {sectionInfo.sub}
           </p>
         </div>
         <div className="relative group">
@@ -449,8 +493,9 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
               activeSection === 'cabin' || activeSection === 'photos' || activeSection === 'sessions') && renderClinicalView()}
             
             {/* PATIENT SECTIONS */}
-            {activeSection === 'appointments' && renderAgenda()}
-            {activeSection === 'results' && renderClinicalView()}
+            {(activeSection === 'appointments' || activeSection === 'results') && (
+              <PatientPortal activeSection={activeSection} />
+            )}
             {activeSection === 'default' && (
               <div className="h-96 flex flex-col items-center justify-center text-slate-400 space-y-6">
                  <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center border border-slate-100 animate-pulse">

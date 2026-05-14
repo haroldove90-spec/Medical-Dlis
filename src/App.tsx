@@ -28,7 +28,7 @@ export default function App() {
     else if (activeRole === Role.RECEPCION) setActiveSection('agenda');
     else if (activeRole === Role.MEDICO) setActiveSection('patients');
     else if (activeRole === Role.ESTETICA) setActiveSection('cabin');
-    else if (activeRole === Role.PACIENTE) setActiveSection('portal');
+    else if (activeRole === Role.PACIENTE) setActiveSection('appointments');
   }, [activeRole]);
 
   const handleLogout = () => {

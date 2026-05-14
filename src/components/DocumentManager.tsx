@@ -14,8 +14,8 @@ interface DocumentManagerProps {
 }
 
 export default function DocumentManager({ patient, specialty, activeRole }: DocumentManagerProps) {
-  const draName = "";
-  const clinicName = "";
+  const draName = "Dr. Alejandro Méndez";
+  const clinicName = "Centro Médico Integral";
   
   const generateConsentText = () => {
     return `
@@ -37,8 +37,8 @@ export default function DocumentManager({ patient, specialty, activeRole }: Docu
     const isSurgical = specialty === 'Cirugía General' || specialty === 'Podología';
     
     const recommendations = isSurgical
-      ? "Favor de mantener reposo absoluto por 48hrs, evitar esfuerzos físicos y seguir su receta de antibióticos al pie de la letra."
-      : "Evite la exposición solar directa por 24hrs, use protector solar FPS 50+ cada 4 horas y mantenga la piel hidratada con la crema indicada.";
+      ? "Mantener reposo absoluto, evitar exposición al sol y seguir la medicación indicada puntualmente."
+      : "Hidratar la zona tratada, usar protector solar FPS 50+ y evitar ejercicio intenso por 24 horas.";
     
     const message = `Hola ${patient.name}, le escribe el equipo de ${clinicName}. Esperamos que su tratamiento de ${specialty} haya sido de su agrado. Para asegurar los mejores resultados, recuerde estas recomendaciones: ${recommendations} Quedamos a sus órdenes ante cualquier duda.`;
     const encodedMessage = encodeURIComponent(message);
@@ -52,7 +52,7 @@ export default function DocumentManager({ patient, specialty, activeRole }: Docu
       printWindow.document.write(`
         <html>
           <head>
-            <title>Medical D'Lis - ${type === 'consent' ? 'Consentimiento' : 'Receta'}</title>
+            <title>${type === 'consent' ? 'Consentimiento' : 'Receta'}</title>
             <style>
               body { font-family: 'Inter', 'Arial', sans-serif; padding: 50px; color: #1e293b; line-height: 1.6; }
               .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #6b21a8; padding-bottom: 20px; margin-bottom: 40px; }
@@ -76,8 +76,8 @@ export default function DocumentManager({ patient, specialty, activeRole }: Docu
             </div>
             <div class="content">${printContent}</div>
             <div class="footer">
-              <strong>Medical D'Lis - Clínica de Medicina Estética y Cirugía</strong><br/>
-              Calle de la Salud #123, Col. Roma, CDMX | Tel: 55-XXXX-XXXX | WhatsApp: 55-YYYY-YYYY
+              <strong>${clinicName} - Especialidades Médicas</strong><br/>
+              Calle Principal #123, Ciudad Salud | Tel: 55-0000-0000
             </div>
             <script>window.print(); window.close();</script>
           </body>

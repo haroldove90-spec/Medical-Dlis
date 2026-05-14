@@ -43,10 +43,32 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
 
   const [specialty, setSpecialty] = useState<Specialty>(getDefaultSpecialty());
 
-  const draName = "";
-  const professionalCeadula = "";
+  const draName = "Dr. Alejandro Méndez";
+  const professionalCeadula = "CED. PROF. 12345678";
 
-  const mockHistory: any[] = [];
+  const mockHistory: any[] = [
+    { 
+      id: 'h1',
+      date: '12 May, 2024', 
+      type: 'Consulta', 
+      doctor: 'Dr. Alejandro Méndez', 
+      content: 'Paciente refiere mejoría notable en la zona tratada. Se observa cicatrización óptima. Se recomienda continuar con cuidados básicos.' 
+    },
+    { 
+      id: 'h2',
+      date: '05 May, 2024', 
+      type: 'Procedimiento', 
+      doctor: 'Dra. Elena Sofía', 
+      content: 'Aplicación de tratamiento protocolario. Sin reacciones adversas inmediatas. Tolerancia al dolor: leve.' 
+    },
+    { 
+      id: 'h3',
+      date: '20 Abr, 2024', 
+      type: 'Valoración', 
+      doctor: 'Dr. Alejandro Méndez', 
+      content: 'Valoración inicial. Candidato apto para el procedimiento solicitado. Se explican riesgos y beneficios.' 
+    }
+  ];
   const [note, setNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string>(
@@ -69,9 +91,9 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
   };
 
   const consentInfo = {
-    Estética: "",
-    Cirugía: "",
-    General: ""
+    Estética: "Por la presente, autorizo la realización del tratamiento estético solicitado. He sido informado sobre los productos a utilizar, la técnica de aplicación y los cuidados posteriores. Entiendo que los resultados pueden variar y acepto los riesgos menores como inflamación temporal o hematomas.",
+    Cirugía: "Certifico que he sido informado detalladamente sobre el procedimiento quirúrgico propuesto, sus alternativas y riesgos inherentes (infección, sangrado, reacciones a la anestesia). Autorizo al equipo médico a realizar las maniobras necesarias para el éxito de la intervención.",
+    General: "Acepto el tratamiento médico sugerido tras la valoración clínica. Me comprometo a seguir las indicaciones terapéuticas y acudir a las revisiones programadas para el seguimiento de mi estado de salud."
   };
 
   const getConsentText = () => {
@@ -80,7 +102,11 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
     return consentInfo.General;
   };
 
-  const defaultNote = "";
+  const defaultNote = specialty === 'Cirugía General' 
+    ? "NOTA QUIRÚRGICA:\n- Técnica: \n- Hallazgos: \n- Plan: " 
+    : specialty === 'Medicina Estética'
+    ? "FICHA DE CABINA:\n- Producto: \n- Lote: \n- Unidades: "
+    : "NOTA DE EVOLUCIÓN:\n- Diagnóstico: \n- Plan de tratamiento: ";
 
   useEffect(() => {
     setNote(defaultNote);
@@ -174,6 +200,18 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
     }
   };
 
+  const getRecordTitle = () => {
+    if (activeTab === 'consent') return 'Consentimiento Informado';
+    if (activeTab === 'recipe') return 'Recetario Digital';
+    
+    switch (activeSection) {
+      case 'photos': return 'Seguimiento Fotográfico';
+      case 'sessions': return 'Control de Sesiones';
+      case 'cabin': return 'Ficha de Cabina';
+      default: return activeRole === Role.ESTETICA ? 'Ficha de Cabina' : 'Expediente Clínico';
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -191,8 +229,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
           </button>
           <div>
             <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">
-              {activeTab === 'evolution' ? (activeRole === Role.ESTETICA ? 'Ficha de Cabina' : 'Expediente Clínico') : 
-               activeTab === 'consent' ? 'Consentimiento Informado' : 'Recetario Digital'}
+              {getRecordTitle()}
             </h2>
             <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">{patient.name}</p>
           </div>
@@ -428,19 +465,21 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
                 <span className="text-[10px] bg-brand-purple/10 text-brand-purple font-black px-2 py-1 rounded-full uppercase">Imágenes Protegidas PII</span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {[1, 2].map((i) => (
-                  <div key={i} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:border-brand-purple/30 hover:text-brand-purple transition-all cursor-pointer group">
-                    <ImageIcon className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Subir Foto</span>
-                  </div>
-                ))}
-                <div className="aspect-square bg-white p-2 rounded-2xl overflow-hidden shadow-md border border-slate-100 flex flex-col ring-2 ring-brand-purple/20">
-                  <div className="flex-1 bg-slate-100 rounded-lg overflow-hidden group relative">
-                    <div className="absolute inset-0 bg-brand-purple/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="text-[8px] text-white font-black uppercase">Ver Antes</span>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="aspect-square bg-slate-100 rounded-2xl overflow-hidden shadow-sm border border-slate-100 relative group">
+                    <img 
+                      src={`https://images.unsplash.com/photo-${i === 1 ? '1584622650111-993a426fbf0a' : i === 2 ? '1559530034-754146a8fc82' : '1551076805-e1869033e561'}?auto=format&fit=crop&q=80&w=200`} 
+                      alt="Progress" 
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                      <p className="text-[8px] text-white font-black uppercase tracking-tighter">Sesión {i}</p>
                     </div>
                   </div>
-                  <span className="text-[8px] text-center mt-1 text-slate-400 font-bold uppercase">Previo</span>
+                ))}
+                <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:border-brand-purple/30 hover:text-brand-purple transition-all cursor-pointer group uppercase">
+                  <Plus className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
+                  <span className="text-[8px] font-black tracking-widest">Añadir</span>
                 </div>
               </div>
             </div>
@@ -638,7 +677,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, activeSec
             <div className="flex border-t border-slate-100 pt-10">
                <div className="w-1/2 pr-10 border-r border-slate-100">
                   <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-4 italic">Fórmula / Indicaciones</p>
-                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed italic"></p>
+                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed italic">Tratamiento sugerido según valoración clínica. Cualquier reacción adversa favor de notificar a su médico de inmediato.</p>
                </div>
                <div className="w-1/2 pl-10 flex flex-col items-center">
                   <div className="w-48 h-px bg-slate-300 mb-2"></div>

@@ -7,21 +7,28 @@ import { useState } from 'react';
 import { Calendar, FileText, Download, Clock, MapPin, User, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
-export default function PatientPortal() {
+interface PatientPortalProps {
+  activeSection: string;
+}
+
+export default function PatientPortal({ activeSection }: PatientPortalProps) {
   const [confirmed, setConfirmed] = useState(false);
   const nextAppointment = {
     date: '20 May, 2024',
     time: '11:00 AM',
     specialty: 'Medicina Estética',
-    doctor: 'Dra. Lluvia Gutiérrez',
-    procedure: 'Botox / Tercio Superior'
+    doctor: 'Dr. Alejandro Méndez',
+    procedure: 'Valoración / Control'
   };
 
   const results = [
-    { id: '1', title: 'Receta Médica', date: '12 May, 2024', type: 'PDF' },
-    { id: '2', title: 'Recomendaciones Post-Operatorias', date: '10 May, 2024', type: 'PDF' },
-    { id: '3', title: 'Reporte de Endoscopia', date: '05 May, 2024', type: 'PDF' },
+    { id: '1', title: 'Receta Médica - Tratamiento Inicial', date: '12 May, 2024', type: 'PDF' },
+    { id: '2', title: 'Consentimiento Informado - Procedimiento', date: '10 May, 2024', type: 'PDF' },
+    { id: '3', title: 'Indicaciones Post-Tratamiento', date: '05 May, 2024', type: 'PDF' },
   ];
+
+  const showAppointments = activeSection === 'appointments' || activeSection === 'portal' || activeSection === 'default';
+  const showResults = activeSection === 'results' || activeSection === 'portal' || activeSection === 'default';
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
@@ -38,7 +45,7 @@ export default function PatientPortal() {
               <User className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-bold text-white/60 uppercase tracking-[0.2em] mb-1">Bienvenido a Medical D'Lis</p>
+              <p className="text-xs font-bold text-white/60 uppercase tracking-[0.2em] mb-1">Bienvenido a su Portal</p>
               <h2 className="text-3xl font-display font-black tracking-tight leading-none">Juan Pérez</h2>
             </div>
           </div>
@@ -50,77 +57,81 @@ export default function PatientPortal() {
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
         {/* Next Appointment */}
-        <div className="md:col-span-7 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest px-1">
-            <Calendar className="w-3 h-3" />
-            <span>Mi Próxima Visita</span>
-          </div>
-          <motion.div 
-             initial={{ opacity: 0, scale: 0.95 }}
-             animate={{ opacity: 1, scale: 1 }}
-             className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative group overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 p-6">
-               <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:bg-brand-purple group-hover:text-white transition-all">
-                  <Clock className="w-6 h-6" />
-               </div>
+        {showAppointments && (
+          <div className={`${showResults ? 'md:col-span-7' : 'md:col-span-12'} space-y-4`}>
+            <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest px-1">
+              <Calendar className="w-3 h-3" />
+              <span>Mi Próxima Visita</span>
             </div>
-            <div className="mb-8">
-               <div className="text-4xl font-black text-slate-900 mb-2">{nextAppointment.date}</div>
-               <div className="text-lg font-bold text-brand-purple">{nextAppointment.time}</div>
-            </div>
-            <div className="space-y-4 border-t border-slate-50 pt-6">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-slate-400" />
-                <span className="text-sm font-medium text-slate-600">Sucursal Roma Norte, CDMX</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <User className="w-4 h-4 text-slate-400" />
-                <span className="text-sm font-medium text-slate-600">Atiende: {nextAppointment.doctor}</span>
-              </div>
-            </div>
-            <button 
-              onClick={() => setConfirmed(true)}
-              disabled={confirmed}
-              className={`w-full mt-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 ${
-                confirmed ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-brand-purple hover:shadow-brand-purple/20'
-              }`}
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative group overflow-hidden"
             >
-               {confirmed ? <CheckCircle2 className="w-4 h-4" /> : null}
-               {confirmed ? 'Asistencia Confirmada' : 'Confirmar Asistencia'}
-            </button>
-          </motion.div>
-        </div>
+              <div className="absolute top-0 right-0 p-6">
+                 <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:bg-brand-purple group-hover:text-white transition-all">
+                    <Clock className="w-6 h-6" />
+                 </div>
+              </div>
+              <div className="mb-8">
+                 <div className="text-4xl font-black text-slate-900 mb-2">{nextAppointment.date}</div>
+                 <div className="text-lg font-bold text-brand-purple">{nextAppointment.time}</div>
+              </div>
+              <div className="space-y-4 border-t border-slate-50 pt-6">
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm font-medium text-slate-600">Sucursal Roma Norte, CDMX</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <User className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm font-medium text-slate-600">Atiende: {nextAppointment.doctor}</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setConfirmed(true)}
+                disabled={confirmed}
+                className={`w-full mt-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 ${
+                  confirmed ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-brand-purple hover:shadow-brand-purple/20'
+                }`}
+              >
+                 {confirmed ? <CheckCircle2 className="w-4 h-4" /> : null}
+                 {confirmed ? 'Asistencia Confirmada' : 'Confirmar Asistencia'}
+              </button>
+            </motion.div>
+          </div>
+        )}
 
         {/* Results & Docs */}
-        <div className="md:col-span-5 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest px-1">
-            <FileText className="w-3 h-3" />
-            <span>Mis Documentos</span>
-          </div>
-          <div className="space-y-3">
-            {results.map((res, idx) => (
-              <motion.div 
-                key={res.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-brand-purple/20 transition-all cursor-pointer group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-brand-purple transition-colors">
-                     <FileText className="w-5 h-5" />
+        {showResults && (
+          <div className={`${showAppointments ? 'md:col-span-5' : 'md:col-span-12'} space-y-4`}>
+            <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest px-1">
+              <FileText className="w-3 h-3" />
+              <span>Mis Documentos</span>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              {results.map((res, idx) => (
+                <motion.div 
+                  key={res.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-brand-purple/20 transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-brand-purple transition-colors">
+                       <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900 line-clamp-1">{res.title}</h4>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{res.date}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-black text-slate-900 line-clamp-1">{res.title}</h4>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{res.date}</p>
-                  </div>
-                </div>
-                <Download className="w-4 h-4 text-slate-300 group-hover:text-brand-purple transition-colors" />
-              </motion.div>
-            ))}
+                  <Download className="w-4 h-4 text-slate-300 group-hover:text-brand-purple transition-colors" />
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Quick Actions */}
