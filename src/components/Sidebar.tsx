@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LayoutDashboard, Users, UserRound, Sparkles, ClipboardList, LogOut, Menu, User, X as CloseIcon } from 'lucide-react';
+import { LayoutDashboard, Users, UserRound, Sparkles, ClipboardList, LogOut, Menu, User, Package, DollarSign, X as CloseIcon } from 'lucide-react';
 import { Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -16,14 +16,45 @@ interface SidebarProps {
   onLogout: () => void;
 }
 
-export default function Sidebar({ activeRole, onRoleChange, isOpen, onToggle, onLogout }: SidebarProps) {
-  const roles = [
-    { id: Role.ADMIN, icon: LayoutDashboard },
-    { id: Role.MEDICO, icon: UserRound },
-    { id: Role.ESTETICA, icon: Sparkles },
-    { id: Role.RECEPCION, icon: ClipboardList },
-    { id: Role.PACIENTE, icon: User },
-  ];
+export default function Sidebar({ activeRole, isOpen, onToggle, onLogout }: SidebarProps) {
+  const getMenuItems = () => {
+    switch (activeRole) {
+      case Role.ADMIN:
+        return [
+          { id: 'metrics', icon: LayoutDashboard, label: 'Métricas Negocio' },
+          { id: 'finance', icon: DollarSign, label: 'Ingresos y Caja' },
+          { id: 'inventory', icon: Package, label: 'Inventario' },
+          { id: 'staff', icon: Users, label: 'Personal' },
+        ];
+      case Role.MEDICO:
+        return [
+          { id: 'patients', icon: Users, label: 'Pacientes Med.' },
+          { id: 'records', icon: UserRound, label: 'Expedientes' },
+          { id: 'docs', icon: ClipboardList, label: 'Recetas/Consent.' },
+        ];
+      case Role.ESTETICA:
+        return [
+          { id: 'cabin', icon: Sparkles, label: 'Tratamientos' },
+          { id: 'photos', icon: UserRound, label: 'Antes y Después' },
+          { id: 'packages', icon: ClipboardList, label: 'Sesiones' },
+        ];
+      case Role.RECEPCION:
+        return [
+          { id: 'agenda', icon: LayoutDashboard, label: 'Agenda Diaria' },
+          { id: 'patients', icon: Users, label: 'Pacientes' },
+          { id: 'box', icon: DollarSign, label: 'Cobros' },
+        ];
+      case Role.PACIENTE:
+        return [
+          { id: 'portal', icon: User, label: 'Mi Portal' },
+          { id: 'appointments', icon: LayoutDashboard, label: 'Mis Citas' },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const menuItems = getMenuItems();
 
   const sidebarContent = (
     <div className="h-full flex flex-col bg-bg-sidebar border-r border-slate-100">
@@ -44,24 +75,16 @@ export default function Sidebar({ activeRole, onRoleChange, isOpen, onToggle, on
         </div>
 
         <nav className="space-y-2">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-4 px-4">Accesos de {activeRole}</p>
-          {roles.map((role) => {
-            const Icon = role.icon;
-            const isActive = activeRole === role.id;
-            // In a real app we might hide non-accessible roles here, 
-            // but for the demo we'll let users switch roles easily if they click them.
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-4 px-4">Panel {activeRole}</p>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
             return (
               <button
-                key={role.id}
-                id={`sidebar-role-${role.id}`}
-                onClick={() => {
-                  onRoleChange(role.id);
-                  if (window.innerWidth < 1024) onToggle();
-                }}
-                className={`w-full sidebar-item ${isActive ? 'sidebar-item-active' : 'sidebar-item-inactive'}`}
+                key={item.id}
+                className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all font-bold text-sm text-slate-400 bg-transparent hover:bg-slate-50 border border-transparent"
               >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-brand-purple' : 'text-slate-400'}`} />
-                <span className="text-sm font-medium tracking-wide">{role.id}</span>
+                <Icon className="w-5 h-5" />
+                <span>{item.label}</span>
               </button>
             );
           })}
@@ -75,7 +98,7 @@ export default function Sidebar({ activeRole, onRoleChange, isOpen, onToggle, on
           </div>
           <div>
             <p className="text-xs font-bold text-slate-900 leading-none mb-1">Dra. Lluvia G.</p>
-            <p className="text-[9px] text-brand-purple font-bold tracking-wider uppercase">Sesión: {activeRole}</p>
+            <p className="text-[9px] text-brand-purple font-bold tracking-wider uppercase">MODO: {activeRole}</p>
           </div>
         </div>
         
