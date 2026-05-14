@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LayoutDashboard, Users, UserRound, Sparkles, ClipboardList, LogOut, Menu, X as CloseIcon } from 'lucide-react';
+import { LayoutDashboard, Users, UserRound, Sparkles, ClipboardList, LogOut, Menu, User, X as CloseIcon } from 'lucide-react';
 import { Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -22,6 +22,7 @@ export default function Sidebar({ activeRole, onRoleChange, isOpen, onToggle, on
     { id: Role.MEDICO, icon: UserRound },
     { id: Role.ESTETICA, icon: Sparkles },
     { id: Role.RECEPCION, icon: ClipboardList },
+    { id: Role.PACIENTE, icon: User },
   ];
 
   const sidebarContent = (

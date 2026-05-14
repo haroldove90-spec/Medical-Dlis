@@ -81,7 +81,7 @@ export default function App() {
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start flex-1">
-          <div className="xl:col-span-8 space-y-8">
+          <div className={`${activeRole === Role.PACIENTE ? 'xl:col-span-12' : 'xl:col-span-8'} space-y-8`}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeRole}
@@ -95,15 +95,17 @@ export default function App() {
             </AnimatePresence>
           </div>
           
-          <div className="xl:col-span-4 lg:sticky lg:top-12">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <AppointmentForm activeRole={activeRole} />
-            </motion.div>
-          </div>
+          {activeRole !== Role.PACIENTE && (
+            <div className="xl:col-span-4 lg:sticky lg:top-12">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <AppointmentForm activeRole={activeRole} />
+              </motion.div>
+            </div>
+          )}
         </div>
       </main>
     </div>

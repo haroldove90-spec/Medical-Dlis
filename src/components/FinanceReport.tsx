@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Wallet, CreditCard, Banknote, PieChart, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Wallet, CreditCard, Banknote, PieChart, CheckCircle2, TrendingUp } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function FinanceReport() {
@@ -17,43 +17,43 @@ export default function FinanceReport() {
       { name: 'Podología', amount: '$2,150', color: 'bg-sky-400' },
       { name: 'Cirugía General', amount: '$6,800', color: 'bg-brand-purple' },
       { name: 'Estética', amount: '$3,500', color: 'bg-purple-400' },
+    ],
+    history: [
+      { period: 'Esta Semana', amount: '$85,200', growth: '+15%' },
+      { period: 'Mensual (Abril)', amount: '$312,400', growth: '+8%' },
     ]
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Main Stats */}
-        <div className="flex-1 dashboard-card overflow-hidden">
+        <div className="lg:col-span-1 dashboard-card overflow-hidden">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2.5 bg-brand-purple-light rounded-xl">
               <Wallet className="w-5 h-5 text-brand-purple" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900">Finanzas de Hoy</h3>
+            <h3 className="text-lg font-bold text-slate-900">Caja del Día</h3>
           </div>
 
           <div className="space-y-6">
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Recaudado</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Hoy</p>
               <h4 className="text-4xl font-black text-slate-900 tracking-tight">{financeData.total}</h4>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3">
               {financeData.methods.map((method) => {
                 const Icon = method.icon;
                 return (
-                  <div key={method.name} className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon className={`w-4 h-4 ${method.color}`} />
+                  <div key={method.name} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 bg-white rounded-xl shadow-sm ${method.color}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{method.name}</span>
                     </div>
-                    <p className="text-xl font-bold text-slate-900">{method.amount}</p>
-                    <div className="w-full bg-slate-200 h-1 rounded-full mt-3 overflow-hidden">
-                      <div 
-                        className={`h-full bg-brand-purple transition-all duration-1000`} 
-                        style={{ width: `${method.percentage}%` }}
-                      ></div>
-                    </div>
+                    <p className="text-sm font-black text-slate-900">{method.amount}</p>
                   </div>
                 );
               })}
@@ -62,10 +62,10 @@ export default function FinanceReport() {
         </div>
 
         {/* Dept Breakdown */}
-        <div className="md:w-80 dashboard-card">
+        <div className="dashboard-card">
           <div className="flex items-center gap-2 mb-6">
             <PieChart className="w-5 h-5 text-brand-purple" />
-            <h3 className="text-lg font-bold text-slate-900">Por Departamento</h3>
+            <h3 className="text-lg font-bold text-slate-900">Ingresos por Área</h3>
           </div>
           <div className="space-y-4">
             {financeData.departments.map((dept) => (
@@ -79,10 +79,39 @@ export default function FinanceReport() {
             ))}
           </div>
           
-          <button className="w-full mt-8 p-4 bg-slate-900 text-white rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-purple transition-all shadow-lg">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            Realizar Cierre de Caja
-          </button>
+          <div className="mt-8 pt-6 border-t border-slate-50">
+             <button className="w-full p-4 p-4 bg-slate-900 text-white rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-purple transition-all shadow-lg">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              Realizar Cierre de Caja
+            </button>
+          </div>
+        </div>
+
+        {/* Historical Summaries */}
+        <div className="dashboard-card border-none bg-slate-900 text-white">
+          <div className="flex items-center gap-2 mb-8">
+            <TrendingUp className="w-5 h-5 text-brand-purple-light" />
+            <h3 className="text-lg font-bold">Histórico Mensual</h3>
+          </div>
+          <div className="space-y-6">
+            {financeData.history.map((item) => (
+              <div key={item.period} className="relative">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">{item.period}</p>
+                <div className="flex items-end justify-between">
+                  <h4 className="text-3xl font-black tracking-tight">{item.amount}</h4>
+                  <span className="text-[10px] font-black px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg">
+                    {item.growth}
+                  </span>
+                </div>
+                <div className="mt-4 w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                   <div className="h-full bg-brand-purple-light w-[70%]"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-slate-500 mt-12 italic font-medium leading-relaxed">
+            * Datos proyectados en base a la agenda de las próximas 4 semanas.
+          </p>
         </div>
       </div>
     </div>

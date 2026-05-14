@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LayoutDashboard, UserRound, Sparkles, ClipboardList, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, UserRound, Sparkles, ClipboardList, ArrowRight, User } from 'lucide-react';
 import { Role } from '../types';
 import { motion } from 'motion/react';
 
@@ -45,11 +45,19 @@ export default function RoleSelection({ onSelect }: RoleSelectionProps) {
       desc: 'Agenda general, registro de pacientes y cobros.',
       features: ['Citas del Día', 'Alta de Pacientes', 'Cierre de Turno']
     },
+    { 
+      id: Role.PACIENTE, 
+      label: 'Portal Paciente', 
+      icon: User, 
+      color: 'bg-emerald-500', 
+      desc: 'Consulta de citas, descarga de recetas y resultados.',
+      features: ['Mis Citas', 'Recetas PDF', 'Indicaciones']
+    },
   ];
 
   return (
     <div className="min-h-screen bg-bg-main flex flex-col p-6 md:p-12">
-      <header className="max-w-6xl mx-auto w-full mb-16 text-center">
+      <header className="max-w-7xl mx-auto w-full mb-16 text-center">
         <div className="flex flex-col items-center gap-4 mb-8">
           <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-slate-100 overflow-hidden">
              <img src="/1000305383.jpg" alt="Logo" className="w-full h-full object-cover" />
@@ -63,7 +71,7 @@ export default function RoleSelection({ onSelect }: RoleSelectionProps) {
         <p className="text-slate-400 mt-2 font-medium">Seleccione el módulo de trabajo para iniciar jornada</p>
       </header>
 
-      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {roles.map((role, idx) => (
           <motion.button
             key={role.id}

@@ -3,12 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, Filter, FileText, ChevronRight } from 'lucide-react';
+import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign } from 'lucide-react';
 import { Patient, Metric, Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 import ClinicalRecord from './ClinicalRecord';
 import FinanceReport from './FinanceReport';
+import InventoryManager from './InventoryManager';
+import StaffManager from './StaffManager';
+import PatientPortal from './PatientPortal';
 
 const mockPatients: Patient[] = [
   { id: '1', name: 'Juan Pérez', lastVisit: '12 May, 2024', service: 'Cirugía General', phone: '5512345678' },
@@ -22,7 +25,7 @@ const mockPatients: Patient[] = [
 const metricsData: Metric[] = [
   { label: 'Citas del día', value: 12, change: '+20%', trend: 'up', icon: 'CalendarCheck' },
   { label: 'Pacientes nuevos', value: 48, change: '+12%', trend: 'up', icon: 'Users' },
-  { label: 'Cobrado Hoy', value: '$12,450', change: '+8%', trend: 'up', icon: 'TrendingUp' },
+  { label: 'Ingresos Hoy', value: '$12,450', change: '+8%', trend: 'up', icon: 'TrendingUp' },
 ];
 
 interface DashboardProps {
@@ -40,8 +43,12 @@ export default function Dashboard({ activeRole }: DashboardProps) {
     return true;
   });
 
+  if (activeRole === Role.PACIENTE) {
+    return <PatientPortal />;
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-12">
       {/* Metrics Section - Simplified for non-admin roles */}
       {(activeRole === Role.ADMIN || activeRole === Role.RECEPCION) && (
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -74,6 +81,14 @@ export default function Dashboard({ activeRole }: DashboardProps) {
         </section>
       )}
 
+      {/* Admin Specific Modules */}
+      {activeRole === Role.ADMIN && (
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <InventoryManager />
+          <StaffManager />
+        </section>
+      )}
+
       {/* Finance Section - Only for Admin/Reception */}
       {(activeRole === Role.ADMIN || activeRole === Role.RECEPCION) && (
         <section>
@@ -83,7 +98,7 @@ export default function Dashboard({ activeRole }: DashboardProps) {
               onClick={() => setShowFinance(!showFinance)}
               className="text-xs font-bold text-brand-purple hover:underline flex items-center gap-1"
             >
-              {showFinance ? 'Ocultar' : 'Ver Reporte Diario'}
+              {showFinance ? 'Ocultar' : 'Ver Reporte de Ingresos'}
               <ChevronRight className={`w-3 h-3 transition-transform ${showFinance ? 'rotate-90' : ''}`} />
             </button>
           </div>

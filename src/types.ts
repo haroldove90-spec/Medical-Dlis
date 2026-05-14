@@ -7,7 +7,24 @@ export enum Role {
   ADMIN = 'Administrador',
   MEDICO = 'Médico',
   ESTETICA = 'Estética',
-  RECEPCION = 'Recepción'
+  RECEPCION = 'Recepción',
+  PACIENTE = 'Paciente'
+}
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  stock: number;
+  minStock: number;
+  category: string;
+}
+
+export interface Staff {
+  id: string;
+  name: string;
+  role: string;
+  commission: number;
+  services: number;
 }
 
 export interface Patient {
