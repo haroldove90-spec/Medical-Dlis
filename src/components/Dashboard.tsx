@@ -4,7 +4,7 @@
  */
 
 import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Plus, Image as ImageIcon, ClipboardList, Activity, Stethoscope, Trash2, ShieldCheck, FileCheck, CheckCircle2 } from 'lucide-react';
-import { Patient, Metric, Role, InformedConsent } from '../types';
+import { Patient, Metric, Role, InformedConsent, ConsentClosure, PhysicalExploration } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
 import ClinicalRecord from './ClinicalRecord';
