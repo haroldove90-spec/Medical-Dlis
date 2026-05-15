@@ -25,10 +25,11 @@ import {
   Heart,
   Stethoscope
 } from 'lucide-react';
-import { Patient, Role, ClinicalRecordData } from '../types';
+import { Patient, Role, ClinicalRecordData, InformedConsent } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import ConsentForm from './ConsentForm';
 
 interface ClinicalRecordProps {
   patient: Patient;
@@ -39,6 +40,7 @@ interface ClinicalRecordProps {
 }
 
 const STORAGE_KEY = 'medical_dlis_clinical_records';
+const CONSENT_STORAGE_KEY = 'medical_dlis_informed_consents';
 
 const INITIAL_FORM_STATE: ClinicalRecordData = {
   id: '',
@@ -128,6 +130,8 @@ const INITIAL_FORM_STATE: ClinicalRecordData = {
 export default function ClinicalRecord({ patient, onClose, activeRole, initialView = 'list' }: ClinicalRecordProps) {
   const [view, setView] = useState<'list' | 'form'>(initialView);
   const [records, setRecords] = useState<ClinicalRecordData[]>([]);
+  const [showConsent, setShowConsent] = useState(false);
+  const [justSavedRecordId, setJustSavedRecordId] = useState<string | null>(null);
   const [formData, setFormData] = useState<ClinicalRecordData>({
     ...INITIAL_FORM_STATE,
     patientId: patient.id,
@@ -163,16 +167,33 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
     setIsSaving(true);
     setTimeout(() => {
       let updatedRecords;
+      let savedId = formData.id;
       if (formData.id) {
         updatedRecords = records.map(r => r.id === formData.id ? formData : r);
       } else {
-        const newRecord = { ...formData, id: crypto.randomUUID() };
+        savedId = crypto.randomUUID();
+        const newRecord = { ...formData, id: savedId };
         updatedRecords = [newRecord, ...records];
       }
       saveToStorage(updatedRecords);
+      setJustSavedRecordId(savedId);
       setIsSaving(false);
-      setView('list');
+      // We don't change view immediately if it is a new record, so they can see the "Create Consent" button
+      if (formData.id) setView('list');
     }, 800);
+  };
+
+  const handleSaveConsent = (consent: InformedConsent) => {
+    const saved = localStorage.getItem(CONSENT_STORAGE_KEY);
+    const consents = saved ? JSON.parse(saved) : [];
+    const newConsents = [
+      { ...consent, clinicalRecordId: justSavedRecordId || undefined },
+      ...consents.filter((c: InformedConsent) => c.id !== consent.id)
+    ];
+    localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(newConsents));
+    setShowConsent(false);
+    setView('list');
+    alert('Consentimiento guardado exitosamente.');
   };
 
   const handleDelete = (id: string) => {
@@ -361,6 +382,15 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                 <span className="hidden sm:inline">{isSaving ? 'Guardando...' : 'Finalizar'}</span>
                 <span className="sm:hidden">{isSaving ? '...' : 'Listo'}</span>
               </button>
+              {justSavedRecordId && view === 'form' && (
+                <button 
+                  onClick={() => setShowConsent(true)}
+                  className="flex-1 sm:flex-none bg-emerald-500 text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl shadow-emerald-500/20"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  Consentimiento
+                </button>
+              )}
             </>
           )}
         </div>
@@ -368,7 +398,39 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
 
       <div className="flex-1 overflow-hidden flex flex-col">
         <AnimatePresence mode="wait">
-          {view === 'list' ? (
+          {showConsent ? (
+            <div className="fixed inset-0 z-[250]">
+              <ConsentForm 
+                patient={patient} 
+                onClose={() => setShowConsent(false)} 
+                onSave={handleSaveConsent}
+                initialData={{
+                  id: '',
+                  patientId: patient.id,
+                  clinicalRecordId: justSavedRecordId || undefined,
+                  date: new Date().toISOString().split('T')[0],
+                  patientData: {
+                    fullName: formData.personalData.fullName,
+                    phone: formData.personalData.phone,
+                    email: formData.personalData.email,
+                    age: formData.personalData.age,
+                    sex: formData.personalData.sex,
+                    medicalHistory: `A. Patológicos: ${formData.pathologicalHistory.notes}\nFamiliar: ${formData.familyHistory.notes}`,
+                  },
+                  procedures: {
+                    nailCutting: true,
+                    callusRemoval: true,
+                    ingrownNail: false,
+                    antisepticCleaning: true,
+                    topicalApplication: true,
+                    complementaryProcedures: true,
+                  },
+                  alternative: 'none',
+                  signature: '',
+                }}
+              />
+            </div>
+          ) : view === 'list' ? (
             <motion.div 
               key="list"
               initial={{ opacity: 0, x: -20 }}
@@ -509,7 +571,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                          <div className="space-y-2">
                            <label className="label-hc">Dolor (EVA 1-10)</label>
-                           <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl">
+                           <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm">
                              <input type="range" min="1" max="10" value={formData.reasonForConsultation.intensity} onChange={e => setFormData({...formData, reasonForConsultation: {...formData.reasonForConsultation, intensity: parseInt(e.target.value)}})} className="flex-1 accent-brand-purple" />
                              <span className="text-xl md:text-2xl font-black text-brand-purple italic">{formData.reasonForConsultation.intensity}</span>
                            </div>
@@ -530,9 +592,9 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                      </div>
                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                        {Object.keys(formData.familyHistory).filter(k => k !== 'notes').map(key => (
-                         <label key={key} className="flex items-center gap-3 p-3 md:p-4 bg-slate-50 rounded-xl md:rounded-2xl cursor-pointer hover:bg-brand-purple/5 transition-all group">
+                         <label key={key} className="flex items-center gap-3 p-3 md:p-4 bg-white rounded-xl md:rounded-2xl cursor-pointer hover:bg-brand-purple/5 transition-all group border-2 border-slate-100 hover:border-brand-purple/20">
                            <input type="checkbox" checked={formData.familyHistory[key as keyof typeof formData.familyHistory] as boolean} onChange={() => setFormData({...formData, familyHistory: {...formData.familyHistory, [key]: !formData.familyHistory[key as keyof typeof formData.familyHistory]}})} className="w-5 h-5 rounded-lg accent-brand-purple shrink-0" />
-                           <span className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest">{key.replace(/([A-Z])/g, ' $1')}</span>
+                           <span className="text-[9px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest">{key.replace(/([A-Z])/g, ' $1')}</span>
                          </label>
                        ))}
                      </div>
@@ -550,7 +612,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                      </div>
                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                         {Object.keys(formData.pathologicalHistory).filter(k => k !== 'notes').map(key => (
-                          <label key={key} className="flex items-center gap-3 p-3 md:p-4 bg-slate-50 rounded-xl md:rounded-2xl cursor-pointer hover:bg-rose-50 transition-all group">
+                          <label key={key} className="flex items-center gap-3 p-3 md:p-4 bg-white rounded-xl md:rounded-2xl cursor-pointer hover:bg-rose-50 transition-all group border-2 border-slate-100 hover:border-rose-200">
                             <input type="checkbox" checked={formData.pathologicalHistory[key as keyof typeof formData.pathologicalHistory] as boolean} onChange={() => setFormData({...formData, pathologicalHistory: {...formData.pathologicalHistory, [key]: !formData.pathologicalHistory[key as keyof typeof formData.pathologicalHistory]}})} className="w-5 h-5 rounded-lg accent-rose-500 shrink-0" />
                             <span className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest truncate">{key === 'hyperthyroidism' ? 'Hipertiroidismo' : key.replace(/([A-Z])/g, ' $1')}</span>
                           </label>
@@ -570,7 +632,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                      </div>
                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                         {Object.keys(formData.nonPathologicalHistory).filter(k => k !== 'notes').map(key => (
-                          <label key={key} className="flex items-center gap-3 p-3 md:p-4 bg-slate-50 rounded-xl md:rounded-2xl cursor-pointer hover:bg-amber-50 transition-all group">
+                          <label key={key} className="flex items-center gap-3 p-3 md:p-4 bg-white rounded-xl md:rounded-2xl cursor-pointer hover:bg-amber-50 transition-all group border-2 border-slate-100 hover:border-amber-200">
                             <input type="checkbox" checked={formData.nonPathologicalHistory[key as keyof typeof formData.nonPathologicalHistory] as boolean} onChange={() => setFormData({...formData, nonPathologicalHistory: {...formData.nonPathologicalHistory, [key]: !formData.nonPathologicalHistory[key as keyof typeof formData.nonPathologicalHistory]}})} className="w-5 h-5 rounded-lg accent-amber-500 shrink-0" />
                             <span className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest truncate">{key.replace(/([A-Z])/g, ' $1')}</span>
                           </label>
@@ -594,7 +656,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                      </div>
                      <div className="space-y-4">
                         {formData.medications.map((med, idx) => (
-                          <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-5 md:p-6 bg-slate-50 rounded-[1.5rem] md:rounded-[2rem] border border-slate-100 relative">
+                          <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-5 md:p-6 bg-white rounded-[1.5rem] md:rounded-[2rem] border-2 border-slate-100 relative shadow-sm">
                             <div className="space-y-1">
                                <label className="label-hc text-[8px] ml-2">Nombre</label>
                                <input type="text" placeholder="Medicamento" value={med.name} onChange={e => {
@@ -650,8 +712,8 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
         .form-input-hc {
           width: 100%;
           padding: 1.15rem 1.25rem;
-          background: #f8fafc;
-          border: 1px solid #f1f5f9;
+          background: white;
+          border: 2px solid #e2e8f0;
           border-radius: 1.25rem;
           font-size: 0.875rem;
           font-weight: 700;
@@ -659,10 +721,13 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
           transition: all 0.3s;
           outline: none;
         }
+        .form-input-hc:hover {
+          border-color: #cbd5e1;
+        }
         .form-input-hc:focus {
           background: white;
-          border-color: #7c3aed40;
-          box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.05), inset 0 2px 4px rgba(0,0,0,0.02);
+          border-color: #7c3aed;
+          box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1), inset 0 2px 4px rgba(0,0,0,0.02);
         }
         .label-hc {
           display: block;
@@ -670,7 +735,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
           font-weight: 900;
           text-transform: uppercase;
           letter-spacing: 0.15em;
-          color: #94a3b8;
+          color: #64748b;
           margin-bottom: 0.75rem;
           margin-left: 0.5rem;
           font-style: italic;

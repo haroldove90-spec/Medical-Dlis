@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LayoutDashboard, Users, UserRound, Sparkles, ClipboardList, LogOut, Menu, User, Package, DollarSign, X as CloseIcon } from 'lucide-react';
+import { LayoutDashboard, Users, UserRound, Sparkles, ClipboardList, LogOut, Menu, User, Package, DollarSign, X as CloseIcon, CheckCircle2, Activity } from 'lucide-react';
 import { Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -36,6 +36,8 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
           { id: 'metrics', icon: LayoutDashboard, label: 'Métricas Médicas' },
           { id: 'records', icon: UserRound, label: 'Expediente Clínico' },
           { id: 'consent', icon: ClipboardList, label: 'Consentimientos' },
+          { id: 'closures', icon: CheckCircle2, label: 'Cierres Consent.' },
+          { id: 'explorations', icon: Activity, label: 'Exploraciones' },
           { id: 'recipe', icon: Package, label: 'Recetario Digital' },
         ];
       case Role.ESTETICA:

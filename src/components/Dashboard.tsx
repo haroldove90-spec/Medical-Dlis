@@ -3,15 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Plus, Image as ImageIcon, ClipboardList, Activity, Stethoscope } from 'lucide-react';
-import { Patient, Metric, Role } from '../types';
+import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Plus, Image as ImageIcon, ClipboardList, Activity, Stethoscope, Trash2, ShieldCheck, FileCheck, CheckCircle2 } from 'lucide-react';
+import { Patient, Metric, Role, InformedConsent } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ClinicalRecord from './ClinicalRecord';
 import FinanceReport from './FinanceReport';
 import InventoryManager from './InventoryManager';
 import StaffManager from './StaffManager';
 import PatientPortal from './PatientPortal';
+import ConsentForm from './ConsentForm';
+import ConsentClosureForm from './ConsentClosureForm';
+import PhysicalExplorationForm from './PhysicalExplorationForm';
+
+const CONSENT_STORAGE_KEY = 'medical_dlis_informed_consents';
+const CLOSURE_STORAGE_KEY = 'medical_dlis_consent_closures';
+const EXPLORATION_STORAGE_KEY = 'medical_dlis_physical_explorations';
 
 const metricsData: Metric[] = [
   { label: 'Citas del día', value: 12, change: '+20%', trend: 'up', icon: 'CalendarCheck' },
@@ -95,6 +102,267 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
     };
     setPatients([newPatient, ...patients]);
   };
+
+  const [justSavedRecordId, setJustSavedRecordId] = useState<string | null>(null);
+  const [consents, setConsents] = useState<InformedConsent[]>([]);
+  const [selectedConsent, setSelectedConsent] = useState<InformedConsent | null>(null);
+  
+  const [closures, setClosures] = useState<ConsentClosure[]>([]);
+  const [selectedClosure, setSelectedClosure] = useState<ConsentClosure | null>(null);
+  
+  const [explorations, setExplorations] = useState<PhysicalExploration[]>([]);
+  const [selectedExploration, setSelectedExploration] = useState<PhysicalExploration | null>(null);
+
+  const [selectedPatientForConsent, setSelectedPatientForConsent] = useState<Patient | null>(null);
+  const [selectedPatientForClosure, setSelectedPatientForClosure] = useState<Patient | null>(null);
+  const [selectedPatientForExploration, setSelectedPatientForExploration] = useState<Patient | null>(null);
+
+  useEffect(() => {
+    const savedConsents = localStorage.getItem(CONSENT_STORAGE_KEY);
+    if (savedConsents) setConsents(JSON.parse(savedConsents));
+    
+    const savedClosures = localStorage.getItem(CLOSURE_STORAGE_KEY);
+    if (savedClosures) setClosures(JSON.parse(savedClosures));
+    
+    const savedExplorations = localStorage.getItem(EXPLORATION_STORAGE_KEY);
+    if (savedExplorations) setExplorations(JSON.parse(savedExplorations));
+  }, [activeSection]);
+
+  const handleSaveConsent = (consent: InformedConsent) => {
+    const updatedConsents = [
+      consent,
+      ...consents.filter(c => c.id !== consent.id)
+    ];
+    setConsents(updatedConsents);
+    localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(updatedConsents));
+    setSelectedConsent(null);
+    setSelectedPatientForConsent(null);
+  };
+
+  const handleSaveClosure = (closure: ConsentClosure) => {
+    const updated = [closure, ...closures.filter(c => c.id !== closure.id)];
+    setClosures(updated);
+    localStorage.setItem(CLOSURE_STORAGE_KEY, JSON.stringify(updated));
+    setSelectedPatientForClosure(null);
+    setSelectedClosure(null);
+  };
+
+  const handleSaveExploration = (exploration: PhysicalExploration) => {
+    const updated = [exploration, ...explorations.filter(e => e.id !== exploration.id)];
+    setExplorations(updated);
+    localStorage.setItem(EXPLORATION_STORAGE_KEY, JSON.stringify(updated));
+    setSelectedPatientForExploration(null);
+    setSelectedExploration(null);
+  };
+
+  const deleteConsent = (id: string) => {
+    if (confirm('¿Eliminar este consentimiento?')) {
+      const updated = consents.filter(c => c.id !== id);
+      setConsents(updated);
+      localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(updated));
+    }
+  };
+
+  const renderConsentList = () => (
+    <div className="space-y-8 h-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {consents.length === 0 ? (
+          <div className="col-span-full h-96 flex flex-col items-center justify-center text-slate-300 gap-6">
+             <div className="w-24 h-24 bg-slate-50 rounded-[3rem] flex items-center justify-center border-2 border-dashed border-slate-100">
+                <ShieldCheck className="w-10 h-10 opacity-30" />
+             </div>
+             <div className="text-center">
+                <p className="text-[10px] font-black uppercase tracking-widest">Sin Documentos</p>
+                <p className="text-xs font-bold text-slate-400 mt-2 italic">Crea un consentimiento desde el expediente del paciente.</p>
+             </div>
+          </div>
+        ) : consents.filter(c => c.patientData.fullName.toLowerCase().includes(searchQuery.toLowerCase())).map((consent, i) => (
+          <motion.div
+            key={consent.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-xl hover:border-brand-purple/30 transition-all group relative overflow-hidden"
+          >
+             <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                <button onClick={() => deleteConsent(consent.id)} className="p-3 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                   <Trash2 className="w-4 h-4" />
+                </button>
+             </div>
+
+             <div className="flex items-start gap-4 mb-8">
+                <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                   <FileCheck className="w-6 h-6 text-emerald-500 group-hover:text-white" />
+                </div>
+                <div>
+                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{consent.date}</p>
+                   <h4 className="text-lg font-black text-slate-900 leading-tight italic">{consent.patientData.fullName}</h4>
+                </div>
+             </div>
+
+             <div className="space-y-3">
+                <div className="flex justify-between items-center bg-slate-50/50 p-3 rounded-xl border border-slate-50">
+                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">ID Documento:</span>
+                   <span className="text-[11px] font-black text-slate-800">{consent.id}</span>
+                </div>
+                <div className="flex justify-between items-center bg-slate-50/50 p-3 rounded-xl border border-slate-50">
+                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Estado:</span>
+                   <span className="text-[9px] font-black px-2 py-1 bg-emerald-500 text-white rounded-lg">FIRMADO</span>
+                </div>
+             </div>
+
+             <button 
+               onClick={() => setSelectedConsent(consent)}
+               className="w-full mt-8 py-4 bg-slate-50 text-slate-900 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-brand-purple hover:text-white transition-all border border-slate-100"
+             >
+                Ver / Exportar PDF
+             </button>
+          </motion.div>
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {selectedConsent && (
+          <div className="fixed inset-0 z-[300]">
+             <ConsentForm 
+               patient={patients.find(p => p.id === selectedConsent.patientId) || INITIAL_PATIENTS[0]} 
+               onClose={() => setSelectedConsent(null)} 
+               onSave={handleSaveConsent}
+               initialData={selectedConsent}
+             />
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  const renderClosureList = () => (
+    <div className="space-y-8 h-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {closures.length === 0 ? (
+          <div className="col-span-full h-96 flex flex-col items-center justify-center text-slate-300 gap-6">
+             <div className="w-24 h-24 bg-slate-50 rounded-[3rem] flex items-center justify-center border-2 border-dashed border-slate-100">
+                <CheckCircle2 className="w-10 h-10 opacity-30" />
+             </div>
+             <div className="text-center">
+                <p className="text-[10px] font-black uppercase tracking-widest">Sin Cierres</p>
+                <p className="text-xs font-bold text-slate-400 mt-2 italic">Finaliza tratamientos desde la tarjeta del paciente.</p>
+             </div>
+          </div>
+        ) : closures.filter(c => c.patientName.toLowerCase().includes(searchQuery.toLowerCase())).map((closure, i) => (
+          <motion.div
+            key={closure.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group relative"
+          >
+             <div className="flex items-start gap-4 mb-8">
+                <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center border border-rose-100">
+                   <CheckCircle2 className="w-6 h-6 text-rose-500" />
+                </div>
+                <div>
+                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{closure.date}</p>
+                   <h4 className="text-lg font-black text-slate-900 italic tracking-tighter">{closure.patientName}</h4>
+                </div>
+             </div>
+             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-6">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tratamiento</p>
+                <p className="text-xs font-bold text-slate-700 leading-relaxed truncate">{closure.treatmentCompleted}</p>
+             </div>
+             <button 
+               onClick={() => setSelectedClosure(closure)}
+               className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-brand-purple transition-all"
+             >
+                Ver Cierre / PDF
+             </button>
+          </motion.div>
+        ))}
+      </div>
+      <AnimatePresence>
+        {selectedClosure && (
+          <div className="fixed inset-0 z-[300]">
+            <ConsentClosureForm 
+              patient={patients.find(p => p.id === selectedClosure.patientId) || INITIAL_PATIENTS[0]} 
+              onClose={() => setSelectedClosure(null)} 
+              onSave={handleSaveClosure}
+              initialData={selectedClosure}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  const renderExplorationList = () => (
+    <div className="space-y-8 h-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {explorations.length === 0 ? (
+          <div className="col-span-full h-96 flex flex-col items-center justify-center text-slate-300 gap-6">
+             <div className="w-24 h-24 bg-slate-50 rounded-[3rem] flex items-center justify-center border-2 border-dashed border-slate-100">
+                <Activity className="w-10 h-10 opacity-30" />
+             </div>
+             <div className="text-center">
+                <p className="text-[10px] font-black uppercase tracking-widest">Sin Exploraciones</p>
+                <p className="text-xs font-bold text-slate-400 mt-2 italic">Realiza exploraciones físicas desde la tarjeta del paciente.</p>
+             </div>
+          </div>
+        ) : explorations.filter(e => {
+            const p = patients.find(p => p.id === e.patientId);
+            return p?.name.toLowerCase().includes(searchQuery.toLowerCase());
+          }).map((exploration, i) => {
+          const patient = patients.find(p => p.id === exploration.patientId);
+          return (
+            <motion.div
+              key={exploration.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group relative"
+            >
+               <div className="flex items-start gap-4 mb-8">
+                  <div className="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center border border-sky-100">
+                     <Activity className="w-6 h-6 text-sky-500" />
+                  </div>
+                  <div>
+                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{exploration.date}</p>
+                     <h4 className="text-lg font-black text-slate-900 italic tracking-tighter">{patient?.name || 'Paciente ID: ' + exploration.patientId}</h4>
+                  </div>
+               </div>
+               <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                     <p className="text-[8px] font-black text-slate-400 uppercase mb-1">Diagnóstico</p>
+                     <p className="text-[10px] font-bold text-slate-700 truncate">{exploration.diagnostics.biomechanical || 'Biomecánico'}</p>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                     <p className="text-[8px] font-black text-slate-400 uppercase mb-1">Tipo de Pie</p>
+                     <p className="text-[10px] font-bold text-slate-700">{exploration.footType}</p>
+                  </div>
+               </div>
+               <button 
+                 onClick={() => setSelectedExploration(exploration)}
+                 className="w-full py-4 bg-slate-50 text-slate-900 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-sky-500 hover:text-white transition-all border border-slate-100"
+               >
+                  Ver Exploración
+               </button>
+            </motion.div>
+          );
+        })}
+      </div>
+      <AnimatePresence>
+        {selectedExploration && (
+          <div className="fixed inset-0 z-[300]">
+            <PhysicalExplorationForm 
+              patient={patients.find(p => p.id === selectedExploration.patientId) || INITIAL_PATIENTS[0]} 
+              onClose={() => setSelectedExploration(null)} 
+              onSave={handleSaveExploration}
+              initialData={selectedExploration}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 
   if (activeRole === Role.PACIENTE) {
     return <PatientPortal activeSection={activeSection} />;
@@ -266,6 +534,8 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
     switch (activeSection) {
       case 'photos': return { title: 'Seguimiento', highlight: 'Fotográfico.', sub: 'Galería de evolución por paciente' };
       case 'consent': return { title: 'Consentimientos', highlight: 'Informados.', sub: 'Gestión de firmas y documentos legales' };
+      case 'closures': return { title: 'Cierres de', highlight: 'Consentimiento.', sub: 'Finalización de tratamientos podológicos' };
+      case 'explorations': return { title: 'Exploraciones', highlight: 'Físicas.', sub: 'Evaluación técnica y clínica del pie' };
       case 'recipe': return { title: 'Recetarios', highlight: 'Digitales.', sub: 'Control de prescripciones y recomendaciones' };
       case 'cabin': return { title: 'Fichas de', highlight: 'Cabina.', sub: 'Parámetros técnicos y evolución estética' };
       case 'sessions': return { title: 'Control de', highlight: 'Sesiones.', sub: 'Paquetes y tratamientos activos' };
@@ -300,7 +570,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
             <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Datos de entrega registrados exitosamente en el sistema.") }}>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Paciente Destinatario</label>
-                <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40 focus:ring-4 focus:ring-brand-purple/5 transition-all">
+                <select className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple">
                   <option value="">Seleccionar Paciente</option>
                   {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
@@ -309,7 +579,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tipo de Entrega</label>
-                  <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40">
+                  <select className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple">
                     <option>Resultados Laboratorio</option>
                     <option>Receta Médica Impresa</option>
                     <option>Kit Post-Tratamiento</option>
@@ -318,7 +588,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Rol Responsable</label>
-                  <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40">
+                  <select className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple">
                     <option>Recepción / Frente</option>
                     <option>Asistente Médico</option>
                     <option>Personal de Enfermería</option>
@@ -328,7 +598,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
 
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Notas u Observaciones (Función Simulada)</label>
-                <textarea rows={3} placeholder="Instrucciones dadas al paciente..." className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple/40 focus:ring-4 focus:ring-brand-purple/5 transition-all"></textarea>
+                <textarea rows={3} placeholder="Instrucciones dadas al paciente..." className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-brand-purple transition-all"></textarea>
               </div>
 
               <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-purple transition-all shadow-xl">
@@ -361,33 +631,6 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
 
   const renderClinicalView = () => (
     <div className="space-y-10">
-      {/* Medical Metrics Section */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
-        {[
-          { label: 'Total Expedientes', value: '1,248', icon: ClipboardList, trend: '+4 hoy', color: 'bg-brand-purple' },
-          { label: 'Pacientes Hoy', value: '14', icon: Users, trend: '6 atendidos', color: 'bg-sky-500' },
-          { label: 'Cirugías Mes', value: '8', icon: Stethoscope, trend: 'En meta', color: 'bg-emerald-500' },
-          { label: 'Alertas Clínicas', value: '2', icon: Activity, trend: 'Críticas', color: 'bg-rose-500' },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-brand-purple/20 transition-all"
-          >
-            <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">{stat.label}</p>
-              <h4 className="text-2xl font-display font-black text-slate-900 italic tracking-tight">{stat.value}</h4>
-              <p className="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{stat.trend}</p>
-            </div>
-            <div className={`w-12 h-12 ${stat.color} text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-              <stat.icon className="w-5 h-5" />
-            </div>
-          </motion.div>
-        ))}
-      </section>
-
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-4 mt-4">
         <div>
           <h2 className="text-3xl font-display font-black text-slate-900 tracking-tight leading-none italic">
@@ -412,7 +655,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
                 placeholder="Buscar por nombre o servicio..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-14 pr-8 py-5 bg-white border border-slate-100 rounded-[2rem] text-xs font-bold w-full md:w-96 shadow-sm outline-none focus:border-brand-purple/40 ring-0 focus:ring-4 focus:ring-brand-purple/5 transition-all" 
+                className="pl-14 pr-8 py-5 bg-white border-2 border-slate-200 rounded-[2rem] text-xs font-bold w-full md:w-96 shadow-sm outline-none focus:border-brand-purple focus:ring-4 focus:ring-brand-purple/5 transition-all" 
               />
             </div>
           </div>
@@ -452,6 +695,12 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
              </motion.div>
            ))}
         </div>
+      ) : activeSection === 'consent' ? (
+        renderConsentList()
+      ) : activeSection === 'closures' ? (
+        renderClosureList()
+      ) : activeSection === 'explorations' ? (
+        renderExplorationList()
       ) : (
         <div className="grid grid-cols-1 gap-5">
           {filteredPatients.map((patient, i) => (
@@ -491,6 +740,42 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPatientForConsent(patient);
+                    }}
+                    className="p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl hover:bg-emerald-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
+                    title="Consentimiento Informado"
+                  >
+                    <ShieldCheck className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                    <span className="text-[7px] font-black uppercase tracking-tighter">Consentimiento</span>
+                  </button>
+
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPatientForClosure(patient);
+                    }}
+                    className="p-4 bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl hover:bg-rose-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
+                    title="Cierre de Consentimiento"
+                  >
+                    <CheckCircle2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                    <span className="text-[7px] font-black uppercase tracking-tighter">Cierre</span>
+                  </button>
+
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPatientForExploration(patient);
+                    }}
+                    className="p-4 bg-sky-50 text-sky-600 border border-sky-100 rounded-2xl hover:bg-sky-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
+                    title="Exploración Física"
+                  >
+                    <Activity className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                    <span className="text-[7px] font-black uppercase tracking-tighter">Exploración</span>
+                  </button>
+
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -699,7 +984,8 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
             {activeSection === 'box' && renderBoxView()}
             
             {/* CLINICAL SECTIONS (MEDIC & AESTHETIC) */}
-            {(activeSection === 'records' || activeSection === 'consent' || activeSection === 'recipe' || 
+            {(activeSection === 'records' || activeSection === 'consent' || activeSection === 'closures' || 
+              activeSection === 'explorations' || activeSection === 'recipe' || 
               activeSection === 'cabin' || activeSection === 'photos' || activeSection === 'sessions') && renderClinicalView()}
             
             {/* PATIENT SECTIONS */}
@@ -718,6 +1004,36 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
               </div>
             )}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedPatientForConsent && (
+          <div className="fixed inset-0 z-[300]">
+            <ConsentForm 
+              patient={selectedPatientForConsent} 
+              onClose={() => setSelectedPatientForConsent(null)} 
+              onSave={handleSaveConsent}
+            />
+          </div>
+        )}
+        {selectedPatientForClosure && (
+          <div className="fixed inset-0 z-[300]">
+            <ConsentClosureForm 
+              patient={selectedPatientForClosure} 
+              onClose={() => setSelectedPatientForClosure(null)} 
+              onSave={handleSaveClosure}
+            />
+          </div>
+        )}
+        {selectedPatientForExploration && (
+          <div className="fixed inset-0 z-[300]">
+            <PhysicalExplorationForm 
+              patient={selectedPatientForExploration} 
+              onClose={() => setSelectedPatientForExploration(null)} 
+              onSave={handleSaveExploration}
+            />
+          </div>
         )}
       </AnimatePresence>
     </div>

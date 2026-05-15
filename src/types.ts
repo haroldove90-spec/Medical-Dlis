@@ -132,6 +132,81 @@ export interface ClinicalRecordData {
   }[];
 }
 
+export interface InformedConsent {
+  id: string;
+  patientId: string;
+  clinicalRecordId?: string;
+  date: string;
+  patientData: {
+    fullName: string;
+    phone: string;
+    email: string;
+    age: number;
+    sex: string;
+    medicalHistory: string;
+  };
+  procedures: {
+    nailCutting: boolean;
+    callusRemoval: boolean;
+    ingrownNail: boolean;
+    antisepticCleaning: boolean;
+    topicalApplication: boolean;
+    complementaryProcedures: boolean;
+  };
+  alternative: 'none' | 'valuation' | 'alternative';
+  signature: string; // Base64 signature
+}
+
+export interface ConsentClosure {
+  id: string;
+  patientId: string;
+  date: string;
+  patientName: string;
+  location?: string;
+  treatmentCompleted: string;
+  observations: string;
+  patientSignature: string;
+  specialistSignature: string;
+}
+
+export interface PhysicalExploration {
+  id: string;
+  patientId: string;
+  date: string;
+  // 1. Visual Exploration (Block A & B)
+  visualExploration: {
+    [key: string]: { der: boolean; izq: boolean };
+  };
+  otherVisualObservations: string;
+  // 2. Morphological
+  footType: 'Egipcio' | 'Romano' | 'Griego' | 'Germánico' | 'Celta';
+  stepType: 'Neutro' | 'Pronación' | 'Supinación';
+  // 3. Manual/Instrumented
+  manualExploration: {
+    osteoarticular: { der: 'Normal' | 'Anormal'; izq: 'Normal' | 'Anormal' };
+    temperature: { der: 'Normal' | 'Anormal'; izq: 'Normal' | 'Anormal' };
+    capillaryRefill: { der: 'Normal' | 'Anormal'; izq: 'Normal' | 'Anormal' };
+    tibialPulse: { der: 'Normal' | 'Anormal'; izq: 'Normal' | 'Anormal' };
+    monofilament: { der: 'Normal' | 'Anormal'; izq: 'Normal' | 'Anormal' };
+    tuningFork: { der: 'Normal' | 'Anormal'; izq: 'Normal' | 'Anormal' };
+    reflexHammer: { der: 'Normal' | 'Anormal'; izq: 'Normal' | 'Anormal' };
+  };
+  // 4. Diagnostics
+  diagnostics: {
+    biomechanical: string;
+    dermatological: string;
+    neurological: string;
+    vascular: string;
+  };
+  // 5. Therapeutics & Reference
+  reference: boolean;
+  referenceTo: string;
+  therapeuticPlan: string;
+  // 6. Validation
+  patientSignature: string;
+  professionalName: string;
+}
+
 export type AppointmentCategory = Specialty;
 
 export interface Metric {
