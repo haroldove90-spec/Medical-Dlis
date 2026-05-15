@@ -90,7 +90,7 @@ export default function PatientPortal({ activeSection }: PatientPortalProps) {
               <button 
                 onClick={() => setConfirmed(true)}
                 disabled={confirmed}
-                className={`w-full mt-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 ${
+                className={`w-full mt-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 ${
                   confirmed ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-brand-purple hover:shadow-brand-purple/20'
                 }`}
               >
@@ -123,7 +123,7 @@ export default function PatientPortal({ activeSection }: PatientPortalProps) {
                     </div>
                     <div>
                       <h4 className="text-xs font-black text-slate-900 line-clamp-1">{res.title}</h4>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{res.date}</p>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">{res.date}</p>
                     </div>
                   </div>
                   <Download className="w-4 h-4 text-slate-300 group-hover:text-brand-purple transition-colors" />
@@ -139,14 +139,14 @@ export default function PatientPortal({ activeSection }: PatientPortalProps) {
         <button className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between hover:bg-white hover:border-brand-purple/30 transition-all group">
             <div className="text-left">
               <h4 className="text-sm font-black text-slate-900 mb-1">Agendar Nueva Cita</h4>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Reserva tu espacio ahora</p>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Reserva tu espacio ahora</p>
             </div>
             <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-brand-purple transition-transform group-hover:translate-x-1" />
         </button>
         <button className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between hover:bg-white hover:border-emerald-200 transition-all group">
             <div className="text-left">
               <h4 className="text-sm font-black text-slate-900 mb-1">Dudas o Urgencias</h4>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Contactar vía WhatsApp</p>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Contactar vía WhatsApp</p>
             </div>
             <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 transition-transform group-hover:translate-x-1" />
         </button>

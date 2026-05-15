@@ -75,7 +75,7 @@ export default function InventoryManager() {
                 </div>
                 <div>
                   <h4 className="text-sm font-black text-slate-900">{item.name}</h4>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{item.category}</p>
+                  <p className="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">{item.category}</p>
                 </div>
               </div>
               
@@ -84,11 +84,11 @@ export default function InventoryManager() {
                   <p className={`text-sm font-black ${isLow ? 'text-rose-600' : 'text-slate-900'}`}>
                     {item.stock} uds
                   </p>
-                  <p className="text-[9px] text-slate-400 font-bold uppercase">Mín: {item.minStock}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">Mín: {item.minStock}</p>
                 </div>
                 <button 
                   onClick={() => handleOrder(item.id)}
-                  className={`p-2 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                  className={`p-2 px-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
                     isLow ? 'bg-rose-600 text-white shadow-lg shadow-rose-200' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
                   }`}
                 >

@@ -349,7 +349,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
             <h2 className="text-lg md:text-xl font-display font-black text-slate-900 tracking-tight leading-none italic truncate">
               {view === 'list' ? 'Expediente Clínico' : formData.id ? 'Editando Historia' : 'Nuevo Registro Clínico'}
             </h2>
-            <p className="text-[9px] md:text-[10px] text-slate-400 font-black uppercase tracking-[0.15em] mt-1.5 flex items-center gap-2 truncate">
+            <p className="text-[11px] md:text-[12px] text-slate-400 font-black uppercase tracking-[0.15em] mt-1.5 flex items-center gap-2 truncate">
                <span className="w-1.5 h-1.5 rounded-full bg-brand-purple shrink-0"></span>
                {patient.name}
             </p>
@@ -360,7 +360,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
           {view === 'list' ? (
             <button 
               onClick={handleNew}
-              className="flex-1 sm:flex-none bg-brand-purple text-white px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-purple-dark transition-all shadow-xl shadow-brand-purple/20"
+              className="flex-1 sm:flex-none bg-brand-purple text-white px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[11px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-purple-dark transition-all shadow-xl shadow-brand-purple/20"
             >
               <Plus className="w-4 h-4" />
               Nuevo
@@ -369,14 +369,14 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
             <>
               <button 
                 onClick={() => setView('list')}
-                className="flex-1 sm:flex-none text-slate-500 px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all text-center"
+                className="flex-1 sm:flex-none text-slate-500 px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[11px] md:text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all text-center"
               >
                 Cancelar
               </button>
               <button 
                 onClick={handleSave}
                 disabled={isSaving}
-                className={`flex-1 sm:flex-none ${isSaving ? 'bg-emerald-500' : 'bg-brand-purple hover:bg-brand-purple-dark'} text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl shadow-brand-purple/20`}
+                className={`flex-1 sm:flex-none ${isSaving ? 'bg-emerald-500' : 'bg-brand-purple hover:bg-brand-purple-dark'} text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[11px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl shadow-brand-purple/20`}
               >
                 {isSaving ? <CheckCircle2 className="w-4 h-4 animate-bounce" /> : <Save className="w-4 h-4" />}
                 <span className="hidden sm:inline">{isSaving ? 'Guardando...' : 'Finalizar'}</span>
@@ -385,7 +385,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
               {justSavedRecordId && view === 'form' && (
                 <button 
                   onClick={() => setShowConsent(true)}
-                  className="flex-1 sm:flex-none bg-emerald-500 text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl shadow-emerald-500/20"
+                  className="flex-1 sm:flex-none bg-emerald-500 text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[11px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl shadow-emerald-500/20"
                 >
                   <ClipboardList className="w-4 h-4" />
                   Consentimiento
@@ -444,8 +444,8 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                     <ClipboardList className="w-8 md:w-10 h-8 md:h-10 opacity-30" />
                   </div>
                   <div className="text-center px-4">
-                    <p className="text-[10px] md:text-sm font-black uppercase tracking-[0.25em]">Historial Vacío</p>
-                    <p className="text-[10px] md:text-xs font-medium text-slate-400 mt-2 italic">Aún no hay registros clínicos para este paciente.</p>
+                    <p className="text-[11px] md:text-sm font-black uppercase tracking-[0.25em]">Historial Vacío</p>
+                    <p className="text-[11px] md:text-xs font-medium text-slate-400 mt-2 italic">Aún no hay registros clínicos para este paciente.</p>
                   </div>
                 </div>
               ) : (
@@ -470,7 +470,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                               <Calendar className="w-4 md:w-5 h-4 md:h-5 text-slate-400 group-hover:text-brand-purple" />
                            </div>
                            <div className="min-w-0">
-                              <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">{record.date}</p>
+                              <p className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest">{record.date}</p>
                               <h4 className="text-lg md:text-xl font-display font-black text-slate-900 tracking-tight italic truncate">{record.recordNumber}</h4>
                            </div>
                         </div>
@@ -594,7 +594,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                        {Object.keys(formData.familyHistory).filter(k => k !== 'notes').map(key => (
                          <label key={key} className="flex items-center gap-3 p-3 md:p-4 bg-white rounded-xl md:rounded-2xl cursor-pointer hover:bg-brand-purple/5 transition-all group border-2 border-slate-100 hover:border-brand-purple/20">
                            <input type="checkbox" checked={formData.familyHistory[key as keyof typeof formData.familyHistory] as boolean} onChange={() => setFormData({...formData, familyHistory: {...formData.familyHistory, [key]: !formData.familyHistory[key as keyof typeof formData.familyHistory]}})} className="w-5 h-5 rounded-lg accent-brand-purple shrink-0" />
-                           <span className="text-[9px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest">{key.replace(/([A-Z])/g, ' $1')}</span>
+                           <span className="text-[11px] md:text-[11px] font-black text-slate-600 uppercase tracking-widest">{key.replace(/([A-Z])/g, ' $1')}</span>
                          </label>
                        ))}
                      </div>
@@ -658,7 +658,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                         {formData.medications.map((med, idx) => (
                           <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-5 md:p-6 bg-white rounded-[1.5rem] md:rounded-[2rem] border-2 border-slate-100 relative shadow-sm">
                             <div className="space-y-1">
-                               <label className="label-hc text-[8px] ml-2">Nombre</label>
+                               <label className="label-hc text-[10px] ml-2">Nombre</label>
                                <input type="text" placeholder="Medicamento" value={med.name} onChange={e => {
                                  const newMeds = [...formData.medications];
                                  newMeds[idx].name = e.target.value;
@@ -666,7 +666,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                                }} className="form-input-hc" />
                             </div>
                             <div className="space-y-1">
-                               <label className="label-hc text-[8px] ml-2">Dosis</label>
+                               <label className="label-hc text-[10px] ml-2">Dosis</label>
                                <input type="text" placeholder="Dosis" value={med.dosage} onChange={e => {
                                  const newMeds = [...formData.medications];
                                  newMeds[idx].dosage = e.target.value;
@@ -674,7 +674,7 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                                }} className="form-input-hc" />
                             </div>
                             <div className="space-y-1">
-                               <label className="label-hc text-[8px] ml-2">Duración</label>
+                               <label className="label-hc text-[10px] ml-2">Duración</label>
                                <div className="flex gap-2">
                                  <input type="text" placeholder="Tiempo" value={med.duration} onChange={e => {
                                    const newMeds = [...formData.medications];

@@ -702,7 +702,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
       ) : activeSection === 'explorations' ? (
         renderExplorationList()
       ) : (
-        <div className="grid grid-cols-1 gap-5">
+        <div className="grid grid-cols-1 gap-6">
           {filteredPatients.map((patient, i) => (
             <motion.div 
               key={patient.id}
@@ -710,87 +710,77 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
               onClick={() => { setSelectedPatient(patient); setClinicalRecordView('list'); }}
-              className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between cursor-pointer hover:border-brand-purple/40 hover:shadow-2xl transition-all duration-500"
+              className="group p-5 sm:p-6 bg-white border border-slate-100 rounded-[2.5rem] flex flex-col items-stretch cursor-pointer hover:border-brand-purple/40 hover:shadow-2xl transition-all duration-500"
             >
-              <div className="flex items-center gap-8 mb-6 sm:mb-0">
-                <div className="relative">
-                  <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-3xl flex items-center justify-center font-black text-brand-purple text-xl shadow-inner group-hover:bg-brand-purple group-hover:text-white transition-all transform group-hover:rotate-[-8deg] duration-500">
+              <div className="flex items-center gap-4 sm:gap-8 mb-6">
+                <div className="relative shrink-0">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-50 border border-slate-100 rounded-2xl sm:rounded-3xl flex items-center justify-center font-black text-brand-purple text-lg sm:text-xl shadow-inner group-hover:bg-brand-purple group-hover:text-white transition-all transform group-hover:rotate-[-8deg] duration-500">
                     {patient.name[0]}
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full"></div>
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-emerald-500 border-4 border-white rounded-full"></div>
                 </div>
-                <div>
-                  <h4 className="text-lg font-black text-slate-900 group-hover:text-brand-purple transition-colors mb-2">{patient.name}</h4>
-                  <div className="flex flex-wrap items-center gap-4">
-                    <span className="text-[10px] font-black bg-slate-100 text-slate-500 p-1 px-3 rounded-xl uppercase tracking-widest">{patient.service}</span>
-                    <div className="w-1.5 h-1.5 bg-slate-200 rounded-full"></div>
-                    <span className="text-[10px] text-brand-purple font-black uppercase tracking-widest">{patient.lastVisit}</span>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-brand-purple transition-colors mb-1 truncate">{patient.name}</h4>
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                    <span className="text-[10px] font-black bg-slate-50 text-slate-500 p-1 px-2.5 rounded-lg uppercase tracking-widest">{patient.service}</span>
+                    <span className="hidden sm:inline w-1 h-1 bg-slate-200 rounded-full"></span>
+                    <span className="text-[10px] text-brand-purple font-black uppercase tracking-widest whitespace-nowrap">{patient.lastVisit}</span>
                   </div>
+                </div>
+                <div className="hidden sm:flex flex-col items-end shrink-0">
+                  <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.2em] mb-1 italic">Estatus</p>
+                  <div className="px-3 py-1 bg-slate-950 text-white rounded-xl text-[11px] font-black uppercase tracking-widest border border-white/5">{patient.status || 'Activo'}</div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-10">
-                <div className="hidden lg:flex flex-col items-end">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Estatus Médico</p>
-                  <div className="flex items-center gap-3">
-                    <div className="px-3 py-1.5 bg-slate-950 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/5">{patient.status || 'Activo'}</div>
-                    {patient.sessions !== 'N/A' && (
-                      <span className="text-[11px] font-black text-brand-purple italic">{patient.sessions}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPatientForConsent(patient);
-                    }}
-                    className="p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl hover:bg-emerald-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
-                    title="Consentimiento Informado"
-                  >
-                    <ShieldCheck className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                    <span className="text-[7px] font-black uppercase tracking-tighter">Consentimiento</span>
-                  </button>
+              <div className="grid grid-cols-2 xs:grid-cols-4 sm:flex items-center gap-2 sm:gap-3">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPatientForConsent(patient);
+                  }}
+                  className="flex-1 sm:flex-none p-3 sm:p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl sm:rounded-2xl hover:bg-emerald-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
+                >
+                  <ShieldCheck className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-tighter">Consentir</span>
+                </button>
 
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPatientForClosure(patient);
-                    }}
-                    className="p-4 bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl hover:bg-rose-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
-                    title="Cierre de Consentimiento"
-                  >
-                    <CheckCircle2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                    <span className="text-[7px] font-black uppercase tracking-tighter">Cierre</span>
-                  </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPatientForClosure(patient);
+                  }}
+                  className="flex-1 sm:flex-none p-3 sm:p-4 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl sm:rounded-2xl hover:bg-rose-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
+                >
+                  <CheckCircle2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-tighter">Cierre</span>
+                </button>
 
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPatientForExploration(patient);
-                    }}
-                    className="p-4 bg-sky-50 text-sky-600 border border-sky-100 rounded-2xl hover:bg-sky-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
-                    title="Exploración Física"
-                  >
-                    <Activity className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                    <span className="text-[7px] font-black uppercase tracking-tighter">Exploración</span>
-                  </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPatientForExploration(patient);
+                  }}
+                  className="flex-1 sm:flex-none p-3 sm:p-4 bg-sky-50 text-sky-600 border border-sky-100 rounded-xl sm:rounded-2xl hover:bg-sky-500 hover:text-white transition-all flex flex-col items-center gap-1 group/btn"
+                >
+                  <Activity className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-tighter">Explorar</span>
+                </button>
 
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPatient(patient);
-                      setClinicalRecordView('form');
-                    }}
-                    className="p-4 bg-brand-purple text-white shadow-lg shadow-brand-purple/20 rounded-2xl hover:scale-110 active:scale-95 transition-all flex flex-col items-center gap-1"
-                    title="Crear Nuevo Historial"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span className="text-[7px] font-black uppercase tracking-tighter">Historia</span>
-                  </button>
-                  <div className="p-4 bg-slate-50 rounded-2xl text-slate-300 group-hover:bg-brand-purple/10 group-hover:text-brand-purple transition-all duration-500 border border-slate-100 group-hover:border-brand-purple/20">
-                    <FileText className="w-6 h-6" />
-                  </div>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPatient(patient);
+                    setClinicalRecordView('form');
+                  }}
+                  className="flex-1 sm:flex-none p-3 sm:p-4 bg-brand-purple text-white shadow-lg shadow-brand-purple/20 rounded-xl sm:rounded-2xl hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-1"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-tighter">Historia</span>
+                </button>
+                
+                <div className="hidden xs:flex flex-1 sm:flex-none p-3 sm:p-4 bg-slate-50 rounded-xl sm:rounded-2xl text-slate-300 group-hover:bg-brand-purple/10 group-hover:text-brand-purple transition-all duration-500 border border-slate-100 group-hover:border-brand-purple/20 items-center justify-center">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               </div>
             </motion.div>

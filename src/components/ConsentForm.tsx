@@ -179,7 +179,7 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
             <h2 className="text-lg md:text-xl font-display font-black text-slate-900 tracking-tight leading-none italic truncate">
               Consentimiento Informado
             </h2>
-            <p className="text-[9px] md:text-[10px] text-slate-400 font-black uppercase tracking-[0.15em] mt-1.5 flex items-center gap-2 truncate">
+            <p className="text-[11px] md:text-[12px] text-slate-400 font-black uppercase tracking-[0.15em] mt-1.5 flex items-center gap-2 truncate">
                <span className="w-1.5 h-1.5 rounded-full bg-brand-purple shrink-0"></span>
                Podología
             </p>
@@ -190,7 +190,7 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
            {initialData && (
               <button 
                 onClick={() => generatePDF(formData)}
-                className="flex-1 sm:flex-none bg-slate-900 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none bg-slate-900 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[11px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2"
               >
                 <FileDown className="w-4 h-4" />
                 Exportar PDF
@@ -199,7 +199,7 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
            <button 
                 onClick={handleSave}
                 disabled={isSaving}
-                className={`flex-1 sm:flex-none ${isSaving ? 'bg-emerald-500' : 'bg-brand-purple hover:bg-brand-purple-dark'} text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl shadow-brand-purple/20`}
+                className={`flex-1 sm:flex-none ${isSaving ? 'bg-emerald-500' : 'bg-brand-purple hover:bg-brand-purple-dark'} text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[11px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl shadow-brand-purple/20`}
               >
                 {isSaving ? <CheckCircle2 className="w-4 h-4 animate-bounce" /> : <Save className="w-4 h-4" />}
                 <span>{isSaving ? 'Guardando...' : 'Firmar y Guardar'}</span>
@@ -217,16 +217,16 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
                </div>
                <div>
                   <h1 className="text-3xl font-display font-black text-slate-900 tracking-tight italic">MEDICAL <span className="text-brand-purple">D'LIS</span></h1>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1">Av. Glandorf 3706, Col San Felipe</p>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Tel: 6144891998</p>
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1">Av. Glandorf 3706, Col San Felipe</p>
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Tel: 6144891998</p>
                </div>
                <div className="pt-4 pb-2 border-y border-slate-50 w-full">
                   <h2 className="text-lg font-black text-slate-900 uppercase tracking-widest">Consentimiento Informado</h2>
-                  <p className="text-[10px] text-slate-400 font-bold mt-1">SERVICIOS DE PODOLOGÍA PROFESIONAL</p>
+                  <p className="text-[11px] text-slate-400 font-bold mt-1">SERVICIOS DE PODOLOGÍA PROFESIONAL</p>
                </div>
                <div className="w-full flex justify-end">
                   <div className="text-left">
-                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Fecha de Emisión</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Fecha de Emisión</label>
                      <input 
                        type="date" 
                        value={formData.date}
@@ -245,24 +245,24 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Nombre Completo</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Nombre Completo</label>
                      <input type="text" value={formData.patientData.fullName} onChange={e => setFormData({...formData, patientData: {...formData.patientData, fullName: e.target.value}})} className="form-input-hc" />
                   </div>
                   <div className="space-y-1">
-                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Teléfono</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Teléfono</label>
                      <input type="tel" value={formData.patientData.phone} onChange={e => setFormData({...formData, patientData: {...formData.patientData, phone: e.target.value}})} className="form-input-hc" />
                   </div>
                   <div className="space-y-1">
-                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Correo Electrónico</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Correo Electrónico</label>
                      <input type="email" value={formData.patientData.email} onChange={e => setFormData({...formData, patientData: {...formData.patientData, email: e.target.value}})} className="form-input-hc" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Edad</label>
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Edad</label>
                        <input type="number" value={formData.patientData.age} onChange={e => setFormData({...formData, patientData: {...formData.patientData, age: parseInt(e.target.value)}})} className="form-input-hc" />
                     </div>
                     <div className="space-y-1">
-                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Sexo</label>
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Sexo</label>
                        <select value={formData.patientData.sex} onChange={e => setFormData({...formData, patientData: {...formData.patientData, sex: e.target.value}})} className="form-input-hc">
                           <option value="M">Masculino</option>
                           <option value="F">Femenino</option>
@@ -271,7 +271,7 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
                     </div>
                   </div>
                   <div className="md:col-span-2 space-y-1">
-                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Antecedentes Médicos Relevantes</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Antecedentes Médicos Relevantes</label>
                      <textarea value={formData.patientData.medicalHistory} onChange={e => setFormData({...formData, patientData: {...formData.patientData, medicalHistory: e.target.value}})} placeholder="Diabetes, Hipertensión, Alergias, etc..." className="form-input-hc min-h-[100px] resize-none" />
                   </div>
                </div>
@@ -303,7 +303,7 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
                              onChange={() => setFormData({...formData, procedures: {...formData.procedures, [item.id]: !formData.procedures[item.id as keyof typeof formData.procedures]}})}
                              className="w-5 h-5 accent-brand-purple rounded-md"
                            />
-                           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.label}</span>
+                           <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{item.label}</span>
                         </label>
                      ))}
                   </div>
@@ -311,7 +311,7 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
                <div className="bg-rose-50/50 p-6 rounded-2xl border-2 border-rose-100 flex gap-4">
                   <ShieldCheck className="w-8 h-8 text-rose-500 shrink-0 mt-1" />
                   <div className="space-y-2">
-                     <h4 className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Cláusula de Bioseguridad</h4>
+                     <h4 className="text-[11px] font-black text-rose-600 uppercase tracking-widest">Cláusula de Bioseguridad</h4>
                      <p className="text-xs text-rose-900/70 font-bold leading-relaxed">
                         Este establecimiento cumple rigurosamente con la <b>NOM-087-ECOL-SSA1-2002</b> sobre manejo de residuos peligrosos biológico-infecciosos (RPBI) y la <b>NOM-005-SSA3-2010</b> sobre infraestructura y equipamiento de establecimientos para la atención médica ambulatoria. El material utilizado es estéril o desechable para garantizar su seguridad.
                      </p>
@@ -361,7 +361,7 @@ export default function ConsentForm({ patient, onClose, onSave, initialData }: C
                          onChange={() => setFormData({...formData, alternative: option.id as any})}
                          className="hidden"
                        />
-                       <span className={`text-[10px] font-black uppercase tracking-widest ${formData.alternative === option.id ? 'text-white' : 'text-slate-500'}`}>{option.label}</span>
+                       <span className={`text-[11px] font-black uppercase tracking-widest ${formData.alternative === option.id ? 'text-white' : 'text-slate-500'}`}>{option.label}</span>
                     </label>
                   ))}
                </div>
