@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Plus, Image as ImageIcon } from 'lucide-react';
+import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Plus, Image as ImageIcon, ClipboardList, Activity, Stethoscope } from 'lucide-react';
 import { Patient, Metric, Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -361,7 +361,34 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
 
   const renderClinicalView = () => (
     <div className="space-y-10">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-4">
+      {/* Medical Metrics Section */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+        {[
+          { label: 'Total Expedientes', value: '1,248', icon: ClipboardList, trend: '+4 hoy', color: 'bg-brand-purple' },
+          { label: 'Pacientes Hoy', value: '14', icon: Users, trend: '6 atendidos', color: 'bg-sky-500' },
+          { label: 'Cirugías Mes', value: '8', icon: Stethoscope, trend: 'En meta', color: 'bg-emerald-500' },
+          { label: 'Alertas Clínicas', value: '2', icon: Activity, trend: 'Críticas', color: 'bg-rose-500' },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-brand-purple/20 transition-all"
+          >
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">{stat.label}</p>
+              <h4 className="text-2xl font-display font-black text-slate-900 italic tracking-tight">{stat.value}</h4>
+              <p className="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{stat.trend}</p>
+            </div>
+            <div className={`w-12 h-12 ${stat.color} text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+              <stat.icon className="w-5 h-5" />
+            </div>
+          </motion.div>
+        ))}
+      </section>
+
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-4 mt-4">
         <div>
           <h2 className="text-3xl font-display font-black text-slate-900 tracking-tight leading-none italic">
             {sectionInfo.title} <span className="text-brand-purple">{sectionInfo.highlight}</span>
@@ -552,6 +579,84 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
     </div>
   );
 
+  const renderMedicalDashboard = () => (
+    <div className="space-y-10">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: 'Pacientes Mes', value: '412', icon: Users, trend: '+12%', color: 'from-brand-purple to-purple-600' },
+          { label: 'Historiales Hoy', value: '8', icon: ClipboardList, trend: '90% Comp.', color: 'from-sky-500 to-sky-600' },
+          { label: 'Citas de Hoy', value: '14', icon: CalendarCheck, trend: 'En curso', color: 'from- emerald-500 to-emerald-600' },
+          { label: 'Recetas Mes', value: '286', icon: FileText, trend: '+5%', color: 'from-rose-500 to-rose-600' },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.1 }}
+            className={`p-6 rounded-[2.5rem] bg-gradient-to-br ${stat.color} text-white shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform`}
+          >
+            <stat.icon className="absolute right-[-5%] bottom-[-5%] w-24 h-24 opacity-10 rotate-12 group-hover:rotate-0 transition-transform duration-500" />
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] opacity-60 mb-2">{stat.label}</p>
+            <h4 className="text-3xl font-black mb-3">{stat.value}</h4>
+            <div className="flex items-center gap-2">
+               <span className="text-[9px] font-black bg-white/10 p-1 px-2 rounded-lg border border-white/5">{stat.trend}</span>
+            </div>
+          </motion.div>
+        ))}
+      </section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <section className="dashboard-card border-none shadow-sm p-8 bg-white/50 border border-white">
+          <div className="flex items-center justify-between mb-8">
+             <h3 className="text-2xl font-display font-black text-slate-900 tracking-tight italic">Evolución de <span className="text-brand-purple">Consultas</span></h3>
+             <Activity className="w-5 h-5 text-slate-400" />
+          </div>
+          <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-[2.5rem] text-slate-400 bg-slate-50/30 gap-4">
+             <div className="flex items-end gap-1 h-32">
+                {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ height: 0 }}
+                    animate={{ height: `${h}%` }}
+                    transition={{ delay: i * 0.1 + 1 }}
+                    className="w-4 bg-brand-purple/20 rounded-t-lg relative group"
+                  >
+                    <div className="absolute inset-0 bg-brand-purple rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </motion.div>
+                ))}
+             </div>
+             <p className="text-[9px] font-black uppercase tracking-widest text-center">Gráfica de rendimiento clínico semanal</p>
+          </div>
+        </section>
+
+        <section className="dashboard-card border-none shadow-sm p-8 bg-white/50 border border-white">
+          <div className="flex items-center justify-between mb-8">
+             <h3 className="text-2xl font-display font-black text-slate-900 tracking-tight italic">En meta <span className="text-brand-purple">Podología</span></h3>
+             <Stethoscope className="w-5 h-5 text-slate-400" />
+          </div>
+          <div className="space-y-6">
+             <div className="p-5 bg-white border border-slate-100 rounded-2xl flex items-center justify-between">
+                <div>
+                   <p className="text-sm font-black text-slate-900">Cirugías Realizadas</p>
+                   <p className="text-[10px] font-bold text-slate-400 uppercase">Progreso Mensual</p>
+                </div>
+                <span className="text-2xl font-display font-black text-emerald-500 italic">85%</span>
+             </div>
+             <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: '85%' }}
+                  transition={{ delay: 1.5, duration: 2 }}
+                  className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                ></motion.div>
+             </div>
+             <p className="text-[9px] text-slate-400 font-bold italic tracking-wide">Faltan 3 procedimientos para alcanzar el objetivo del mes.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+
   return (
     <div className="pb-6">
       <AnimatePresence mode="wait">
@@ -579,8 +684,11 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
+            {/* METRICS SECTIONS */}
+            {activeSection === 'metrics' && activeRole === Role.ADMIN && renderAdminDashboard()}
+            {activeSection === 'metrics' && activeRole === Role.MEDICO && renderMedicalDashboard()}
+            
             {/* ADMIN SECTIONS */}
-            {activeSection === 'metrics' && renderAdminDashboard()}
             {activeSection === 'inventory' && renderInventory()}
             {activeSection === 'staff' && renderStaff()}
             {activeSection === 'finance' && <div className="space-y-8 animate-in fade-in zoom-in duration-500 transition-all"><FinanceReport /></div>}

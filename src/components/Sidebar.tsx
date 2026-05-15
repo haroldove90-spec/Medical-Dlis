@@ -33,6 +33,7 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
         ];
       case Role.MEDICO:
         return [
+          { id: 'metrics', icon: LayoutDashboard, label: 'Métricas Médicas' },
           { id: 'records', icon: UserRound, label: 'Expediente Clínico' },
           { id: 'consent', icon: ClipboardList, label: 'Consentimientos' },
           { id: 'recipe', icon: Package, label: 'Recetario Digital' },

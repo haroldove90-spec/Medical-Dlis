@@ -581,9 +581,9 @@ export default function ClinicalRecord({ patient, onClose, activeRole, initialVi
                    {/* Section: Medications */}
                    <section className="space-y-6 md:space-y-8">
                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3 md:gap-4 text-brand-purple overflow-hidden">
+                        <div className="flex items-center gap-3 md:gap-4 text-brand-purple">
                           <Plus className="w-6 md:w-8 h-6 md:h-8 shrink-0" />
-                          <h3 className="text-xl md:text-2xl font-display font-black text-slate-900 tracking-tight italic truncate">7. Medicación Actual</h3>
+                          <h3 className="text-xl md:text-2xl font-display font-black text-slate-900 tracking-tight italic">7. Medicación Actual</h3>
                         </div>
                         <button 
                           onClick={() => setFormData({...formData, medications: [...formData.medications, { name: '', dosage: '', duration: '' }]})}

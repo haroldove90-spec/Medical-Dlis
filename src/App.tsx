@@ -26,7 +26,7 @@ export default function App() {
   useEffect(() => {
     if (activeRole === Role.ADMIN) setActiveSection('metrics');
     else if (activeRole === Role.RECEPCION) setActiveSection('agenda');
-    else if (activeRole === Role.MEDICO) setActiveSection('patients');
+    else if (activeRole === Role.MEDICO) setActiveSection('metrics');
     else if (activeRole === Role.ESTETICA) setActiveSection('cabin');
     else if (activeRole === Role.PACIENTE) setActiveSection('appointments');
   }, [activeRole]);
