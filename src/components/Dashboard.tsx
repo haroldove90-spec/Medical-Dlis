@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Image as ImageIcon } from 'lucide-react';
+import { Users, CalendarCheck, TrendingUp, Search, MoreHorizontal, FileText, ChevronRight, Package, DollarSign, Sparkles, UserRound, Plus, Image as ImageIcon } from 'lucide-react';
 import { Patient, Metric, Role } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -69,6 +69,7 @@ export const INITIAL_PATIENTS: Patient[] = [
 export default function Dashboard({ activeRole, activeSection }: DashboardProps) {
   const [patients, setPatients] = useState<Patient[]>(INITIAL_PATIENTS);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [clinicalRecordView, setClinicalRecordView] = useState<'list' | 'form'>('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFinance, setShowFinance] = useState(false);
 
@@ -181,7 +182,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
           </div>
           <div className="space-y-5">
             {filteredPatients.map((p, i) => (
-              <div key={p.id} className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex items-center justify-between hover:border-brand-purple/30 hover:shadow-2xl hover:shadow-brand-purple/10 transition-all duration-500 cursor-pointer" onClick={() => setSelectedPatient(p)}>
+              <div key={p.id} className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex items-center justify-between hover:border-brand-purple/30 hover:shadow-2xl hover:shadow-brand-purple/10 transition-all duration-500 cursor-pointer" onClick={() => { setSelectedPatient(p); setClinicalRecordView('list'); }}>
                 <div className="flex items-center gap-8">
                   <div className="text-right w-16">
                     <p className="text-sm font-black text-slate-900">09:{i}0</p>
@@ -369,16 +370,25 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
             {sectionInfo.sub}
           </p>
         </div>
-        <div className="relative group">
-          <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-brand-purple" />
-          <input 
-            type="text" 
-            placeholder="Buscar por nombre o servicio..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 pr-8 py-5 bg-white border border-slate-100 rounded-[2rem] text-xs font-bold w-full md:w-96 shadow-sm outline-none focus:border-brand-purple/40 ring-0 focus:ring-4 focus:ring-brand-purple/5 transition-all" 
-          />
-        </div>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleAddPatient}
+              className="hidden sm:flex bg-brand-purple text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest items-center gap-2 hover:bg-brand-purple-dark transition-all shadow-xl shadow-brand-purple/20"
+            >
+              <Users className="w-4 h-4" />
+              Nuevo Paciente
+            </button>
+            <div className="relative group">
+              <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-brand-purple" />
+              <input 
+                type="text" 
+                placeholder="Buscar por nombre o servicio..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-14 pr-8 py-5 bg-white border border-slate-100 rounded-[2rem] text-xs font-bold w-full md:w-96 shadow-sm outline-none focus:border-brand-purple/40 ring-0 focus:ring-4 focus:ring-brand-purple/5 transition-all" 
+              />
+            </div>
+          </div>
       </header>
 
       {activeSection === 'photos' ? (
@@ -389,7 +399,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
                transition={{ delay: i * 0.1 }}
-               onClick={() => setSelectedPatient(p)}
+               onClick={() => { setSelectedPatient(p); setClinicalRecordView('list'); }}
                className="dashboard-card group cursor-pointer hover:border-brand-purple/40"
              >
                 <div className="flex items-center gap-4 mb-6">
@@ -423,7 +433,7 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              onClick={() => setSelectedPatient(patient)}
+              onClick={() => { setSelectedPatient(patient); setClinicalRecordView('list'); }}
               className="group p-6 bg-white border border-slate-100 rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between cursor-pointer hover:border-brand-purple/40 hover:shadow-2xl transition-all duration-500"
             >
               <div className="flex items-center gap-8 mb-6 sm:mb-0">
@@ -453,8 +463,22 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
                     )}
                   </div>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-2xl text-slate-300 group-hover:bg-brand-purple/10 group-hover:text-brand-purple transition-all duration-500 border border-slate-100 group-hover:border-brand-purple/20">
-                  <FileText className="w-6 h-6" />
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPatient(patient);
+                      setClinicalRecordView('form');
+                    }}
+                    className="p-4 bg-brand-purple text-white shadow-lg shadow-brand-purple/20 rounded-2xl hover:scale-110 active:scale-95 transition-all flex flex-col items-center gap-1"
+                    title="Crear Nuevo Historial"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span className="text-[7px] font-black uppercase tracking-tighter">Historia</span>
+                  </button>
+                  <div className="p-4 bg-slate-50 rounded-2xl text-slate-300 group-hover:bg-brand-purple/10 group-hover:text-brand-purple transition-all duration-500 border border-slate-100 group-hover:border-brand-purple/20">
+                    <FileText className="w-6 h-6" />
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -529,29 +553,23 @@ export default function Dashboard({ activeRole, activeSection }: DashboardProps)
   );
 
   return (
-    <div className="pb-12">
+    <div className="pb-6">
       <AnimatePresence mode="wait">
         {selectedPatient ? (
           <motion.div
-            key="clinical-record-modal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-12"
+            key="clinical-record-view"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="h-full"
           >
-            <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-xl transition-all" onClick={() => setSelectedPatient(null)} />
-            <motion.div 
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              className="relative w-full max-w-6xl z-10 max-h-[90vh] overflow-y-auto rounded-[3.5rem] bg-white shadow-[0_32px_120px_rgba(0,0,0,0.4)]"
-            >
-              <ClinicalRecord 
-                patient={selectedPatient} 
-                onClose={() => setSelectedPatient(null)}
-                activeRole={activeRole}
-                activeSection={activeSection}
-              />
-            </motion.div>
+            <ClinicalRecord 
+              patient={selectedPatient} 
+              onClose={() => setSelectedPatient(null)}
+              activeRole={activeRole}
+              activeSection={activeSection}
+              initialView={clinicalRecordView}
+            />
           </motion.div>
         ) : (
           <motion.div

@@ -66,8 +66,8 @@ export default function App() {
             </button>
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-2 md:gap-4">
-                <div className="bg-white p-1 md:p-2 rounded-[0.6rem] md:rounded-xl shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
-                  <img src="https://cossma.com.mx/medical.png" alt="Medical D'Lis Logo" className="h-7 sm:h-10 md:h-14 w-auto object-contain drop-shadow-sm" />
+                <div className="bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-md border border-slate-100 flex items-center justify-center shrink-0">
+                  <img src="https://cossma.com.mx/medical.png" alt="Medical D'Lis Logo" className="h-10 sm:h-14 md:h-20 w-auto object-contain drop-shadow-sm" />
                 </div>
                 <div>
                   <h1 className="text-lg sm:text-xl md:text-3xl font-display font-black text-slate-900 tracking-tight leading-none italic">
@@ -104,7 +104,7 @@ export default function App() {
             const hasRightSidebar = activeRole === Role.RECEPCION && (activeSection === 'agenda' || activeSection === 'registration');
             return (
               <>
-                <div className={`${!hasRightSidebar ? 'xl:col-span-12' : 'xl:col-span-8'} space-y-8 pb-32`}>
+                <div className={`${!hasRightSidebar ? 'xl:col-span-12' : 'xl:col-span-8'} space-y-8`}>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={`${activeRole}-${activeSection}`}

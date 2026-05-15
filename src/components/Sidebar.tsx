@@ -88,7 +88,7 @@ export default function Sidebar({ activeRole, activeSection, onSectionChange, is
                 title={item.label}
                 onClick={() => {
                   onSectionChange(item.id);
-                  if (window.innerWidth < 1024) onToggle();
+                  onToggle();
                 }}
                 className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all duration-300 font-bold text-sm relative group ${
                   isActive 
